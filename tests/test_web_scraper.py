@@ -1,10 +1,9 @@
+from pathlib import Path
+
 import pytest
 
-from aiforge.utils.file_utils import get_project_root
+from aiforge.config import AiForgeConfig
 from aiforge.utils.web_scraper import fetch_wikipedia_pages, save_wikipedia_pages
-
-# from paz.utils.file_utils import get_project_root
-# from paz.utils.web_scraper import fetch_wikipedia_pages, save_wikipedia_pages
 
 
 @pytest.fixture
@@ -15,16 +14,39 @@ def wikipedia_urls():
     ]
 
 
-@pytest.fixture
-def project_root():
-    return get_project_root()
+@pytest.fixture(autouse=True)
+def setup_test_environment(monkeypatch):
+    # Set up test environment variables
+    test_root = Path.cwd() / "test_root"
+    monkeypatch.setenv("AIFORGE_PROJECT_ROOT", str(test_root))
+    monkeypatch.setenv("AIFORGE_DATA_DIR", str(test_root / "test_data"))
+    monkeypatch.setenv("AIFORGE_TMP_DIR", str(test_root / "test_tmp"))
+
+    # Create a new config instance for each test
+    test_config = AiForgeConfig()
+
+    # Create test directories
+    test_config.data_dir.mkdir(parents=True, exist_ok=True)
+    test_config.tmp_dir.mkdir(parents=True, exist_ok=True)
+
+    # Set the config for web_scraper
+    import aiforge.utils.web_scraper
+
+    monkeypatch.setattr(aiforge.utils.web_scraper, "config", test_config)
+
+    yield test_config
+
+    # Clean up
+    import shutil
+
+    shutil.rmtree(test_root)
 
 
 @pytest.fixture
-def output_files(project_root):
+def output_files(setup_test_environment):
     return {
-        "tmp": project_root / "tmp" / "test_tmp.txt",
-        "persistent": project_root / "data" / "test_persistent.txt",
+        "tmp": setup_test_environment.tmp_dir / "test_tmp.txt",
+        "persistent": setup_test_environment.data_dir / "test_persistent.txt",
     }
 
 
@@ -60,10 +82,4 @@ async def test_fetch_save_and_validate_wikipedia_pages(wikipedia_urls, output_fi
         assert "asynchronous" in content.lower(), f"'asynchronous' not in {file_path}"
 
 
-# @pytest.fixture(autouse=True)
-# def cleanup(output_files):
-#    yield
-# Clean up files after tests
-#    for file_path in output_files.values():
-#        if file_path.exists():
-#            file_path.unlink()
+# Cleanup is handled by the setup_test_environment fixture

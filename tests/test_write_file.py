@@ -1,38 +1,65 @@
+import os
 from pathlib import Path
 
 import pytest
 
-from aiforge import config
+from aiforge.config import AiForgeConfig
 from aiforge.utils.file_utils import get_file, write_to_file
 
 
+@pytest.fixture(autouse=True)
+def setup_test_environment(monkeypatch):
+    # Set up test environment variables
+    test_root = Path.cwd() / "test_root"
+    monkeypatch.setenv("AIFORGE_PROJECT_ROOT", str(test_root))
+    monkeypatch.setenv("AIFORGE_DATA_DIR", str(test_root / "test_data"))
+    monkeypatch.setenv("AIFORGE_TMP_DIR", str(test_root / "test_tmp"))
+
+    # Create a new config instance for each test
+    test_config = AiForgeConfig()
+
+    # Create test directories
+    test_config.data_dir.mkdir(parents=True, exist_ok=True)
+    test_config.tmp_dir.mkdir(parents=True, exist_ok=True)
+
+    yield test_config
+
+    # Clean up
+    import shutil
+
+    shutil.rmtree(test_root)
+
+
 @pytest.mark.parametrize("persistent", [True, False])
-def test_write_to_file(persistent):
+def test_write_to_file(persistent, setup_test_environment, monkeypatch):
+    monkeypatch.setattr("aiforge.utils.file_utils.config", setup_test_environment)
+
     content = "Test content"
     filename = "test_file.txt"
 
     file_path = write_to_file(content, filename, persistent)
 
-    expected_dir = config.DATA_DIR if persistent else config.TMP_DIR
+    expected_dir = (
+        setup_test_environment.data_dir
+        if persistent
+        else setup_test_environment.tmp_dir
+    )
     assert file_path == expected_dir / filename
     assert file_path.exists()
 
     with open(file_path, "r") as f:
         assert f.read() == content
 
-    # Print file location for manual cleanup
-    print(f"\nTest file created at: {file_path}")
-    print("Please remove this file manually after inspection.")
 
+def test_write_to_file_with_tuples(setup_test_environment, monkeypatch):
+    monkeypatch.setattr("aiforge.utils.file_utils.config", setup_test_environment)
 
-# @pytest.mark.skip(reason="Skipping for now")
-def test_write_to_file_with_tuples():
     content = [("Title 1", "Content 1"), ("Title 2", "Content 2")]
     filename = "test_file_tuples.txt"
 
     file_path = write_to_file(content, filename, False)
 
-    assert file_path == config.TMP_DIR / filename
+    assert file_path == setup_test_environment.tmp_dir / filename
     assert file_path.exists()
 
     with open(file_path, "r") as f:
@@ -42,58 +69,22 @@ def test_write_to_file_with_tuples():
         assert "Content from Title 2:" in file_content
         assert "Content 2" in file_content
 
-    # Note: We're not cleaning up this file anymore
+
+def test_config_directories(setup_test_environment):
+    assert setup_test_environment.project_root == Path.cwd() / "test_root"
+    assert setup_test_environment.data_dir == Path.cwd() / "test_root" / "test_data"
+    assert setup_test_environment.tmp_dir == Path.cwd() / "test_root" / "test_tmp"
 
 
-@pytest.mark.skip(reason="Skipping for now")
-def test_validate_tmp_folder():
-    """
-    Test that the TMP_DIR in the config is set to the correct path.
-    """
-    expected_tmp_path = Path("/Users/mpaz/github/advanced-python-project/tmp")
+def test_get_file_binary(setup_test_environment, monkeypatch):
+    monkeypatch.setattr("aiforge.utils.file_utils.config", setup_test_environment)
 
-    assert (
-        config.TMP_DIR == expected_tmp_path
-    ), f"TMP_DIR is incorrect. Expected {expected_tmp_path}, got {config.TMP_DIR}"
+    # Create a test PNG file
+    test_png_path = setup_test_environment.tmp_dir / "test.png"
+    test_png_content = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82"
 
-    # Print out the actual TMP_DIR for debugging
-    print(f"Actual TMP_DIR: {config.TMP_DIR}")
-
-    # Check if the directory actually exists
-    assert config.TMP_DIR.exists(), f"The directory {config.TMP_DIR} does not exist"
-
-    # Print out the contents of the TMP_DIR for debugging
-    print("Contents of TMP_DIR:")
-    for item in config.TMP_DIR.iterdir():
-        print(f" - {item.name}")
-
-    # Check specifically for test_file_tuples.txt
-    test_file_tuples_path = config.TMP_DIR / "test_file_tuples.txt"
-    if test_file_tuples_path.exists():
-        print("test_file_tuples.txt found in TMP_DIR")
-        with open(test_file_tuples_path, "r") as f:
-            print("Contents of test_file_tuples.txt:")
-            print(f.read())
-    else:
-        print("test_file_tuples.txt not found in TMP_DIR")
-
-
-# @pytest.mark.skip(reason="Skipping for now")
-def test_get_file_binary():
-    """
-    Test that get_file can retrieve a binary file (test.png) from the project's tmp folder.
-    """
-    # Use the correct tmp directory from config
-    tmp_dir = config.TMP_DIR
-
-    # Print debugging information
-    print(f"TMP_DIR from config: {tmp_dir}")
-
-    # Path to test.png
-    test_png_path = tmp_dir / "test.png"
-
-    # Check if test.png exists
-    assert test_png_path.exists(), f"test.png not found at {test_png_path}"
+    with open(test_png_path, "wb") as f:
+        f.write(test_png_content)
 
     # Try to get the file
     file_content = get_file("test.png", persistent=False, binary=True)
@@ -106,3 +97,6 @@ def test_get_file_binary():
 
     # Check for PNG signature
     assert file_content.startswith(b"\x89PNG"), "File does not start with PNG signature"
+
+
+# You can add more tests here as needed

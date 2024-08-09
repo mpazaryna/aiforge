@@ -1,17 +1,9 @@
+# src/aiforge/utils/file_utils.py
+
 from pathlib import Path
 from typing import List, Tuple, Union
 
-from aiforge import config
-
-
-def get_project_root() -> Path:
-    """
-    Get the project root directory.
-
-    Returns:
-        Path: The path to the project root.
-    """
-    return config.PROJECT_ROOT
+from aiforge.config import config
 
 
 def write_to_file(
@@ -31,17 +23,16 @@ def write_to_file(
     Returns:
         Path: The path to the written file.
     """
-    output_dir = config.DATA_DIR if persistent else config.TMP_DIR
+    output_dir = config.data_dir if persistent else config.tmp_dir
     output_file_path = output_dir / output_filename
 
-    with open(output_file_path, "w", encoding="utf-8") as f:
-        if isinstance(content, str):
+    if isinstance(content, str):
+        with open(output_file_path, "w") as f:
             f.write(content)
-        else:
+    else:
+        with open(output_file_path, "w") as f:
             for title, text in content:
-                f.write(f"Content from {title}: \n\n")
-                f.write(text)
-                f.write("\n\n" + "-" * 80 + "\n\n")
+                f.write(f"Content from {title}:\n{text}\n\n")
 
     return output_file_path
 
@@ -50,32 +41,22 @@ def get_file(
     filename: str, persistent: bool = False, binary: bool = False
 ) -> Union[str, bytes]:
     """
-    Retrieve the contents of a file from either the tmp or data directory.
+    Retrieve content from a file in either the tmp or data directory.
 
     Args:
         filename (str): The name of the file to retrieve.
-        persistent (bool): If True, look in the data folder; if False, look in the tmp folder.
-        binary (bool): If True, read the file in binary mode.
+        persistent (bool): If True, look in data folder; if False, look in tmp folder.
+        binary (bool): If True, read file in binary mode.
 
     Returns:
-        Union[str, bytes]: The contents of the file, as a string or bytes object.
-
-    Raises:
-        FileNotFoundError: If the file doesn't exist in the specified location.
-        IOError: If there's an error reading the file.
+        Union[str, bytes]: The content of the file.
     """
-    file_dir = config.DATA_DIR if persistent else config.TMP_DIR
+    file_dir = config.data_dir if persistent else config.tmp_dir
     file_path = file_dir / filename
 
-    print(f"get_file is looking for file at: {file_path}")
+    mode = "rb" if binary else "r"
+    with open(file_path, mode) as f:
+        return f.read()
 
-    if not file_path.exists():
-        raise FileNotFoundError(f"File not found: {file_path}")
 
-    try:
-        mode = "rb" if binary else "r"
-        encoding = None if binary else "utf-8"
-        with open(file_path, mode, encoding=encoding) as f:
-            return f.read()
-    except IOError as e:
-        raise IOError(f"Error reading file {file_path}: {str(e)}")
+# You can add more utility functions here as needed
