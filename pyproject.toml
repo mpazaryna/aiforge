@@ -1,0 +1,22 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "aiforge"
+version = "0.1.0"
+description = "A project for AI development"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+packages = [{include = "aiforge", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.0"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
