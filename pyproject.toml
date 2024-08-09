@@ -21,6 +21,7 @@ pytest-asyncio = "^0.23.8"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.0"
+hypothesis = "^6.108.3"
 
 [tool.pytest.ini_options]
 pythonpath = [
