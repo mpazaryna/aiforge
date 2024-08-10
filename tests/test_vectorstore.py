@@ -202,10 +202,14 @@ def test_process_multiple_files(sample_text_files):
 
 def test_process_multiple_files():
     chunk_size = 100
-    input_files = ["moby_dick.txt", "sherlock_holmes.txt", "great_gatsby.txt"]
 
-    for input_file in input_files:
-        input_path = config.data_dir / input_file
+    # Get all .txt files in the data directory
+    input_files = list(config.data_dir.glob("*.txt"))
+
+    assert len(input_files) > 0, f"No .txt files found in {config.data_dir}"
+
+    for input_path in input_files:
+        input_file = input_path.name
 
         # Check if the file exists
         assert (
@@ -213,14 +217,14 @@ def test_process_multiple_files():
         ), f"Test file {input_file} not found in {config.data_dir}"
 
         # Read original content
-        with open(input_path, "r") as f:
+        with open(input_path, "r", encoding="utf-8") as f:
             original_content = f.read()
 
         # Chunk the text
-        chunks = chunk_text(input_file, chunk_size=chunk_size)
+        chunks = chunk_text(str(input_path), chunk_size=chunk_size)
 
         # Save chunks to JSON
-        output_file = f"{Path(input_file).stem}_chunks.json"
+        output_file = f"{input_path.stem}_chunks.json"
         save_chunks_to_json(chunks, output_file)
 
         # Verify the output file exists
@@ -230,7 +234,7 @@ def test_process_multiple_files():
         ), f"Output file {output_file} not created in {config.tmp_dir}"
 
         # Read the saved JSON
-        with open(output_path, "r") as f:
+        with open(output_path, "r", encoding="utf-8") as f:
             saved_data = json.load(f)
 
         # Verify the structure of the saved data
@@ -257,9 +261,10 @@ def test_process_multiple_files():
         ), f"Last chunk in {input_file} has incorrect length: {len(saved_data['chunks'][-1])}"
 
         # Clean up
-        # os.remove(output_path)
+        output_path.unlink()
 
     # Verify all files were processed
-    # assert (
-    #    len(os.listdir(config.tmp_dir)) == 0
-    # ), "Not all temporary files were cleaned up"
+    remaining_files = list(config.tmp_dir.glob("*_chunks.json"))
+    assert (
+        len(remaining_files) == 0
+    ), f"Not all temporary files were cleaned up. Remaining files: {remaining_files}"
