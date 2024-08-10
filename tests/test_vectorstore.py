@@ -268,3 +268,90 @@ def test_process_multiple_files():
     assert (
         len(remaining_files) == 0
     ), f"Not all temporary files were cleaned up. Remaining files: {remaining_files}"
+
+
+def write_to_log(log_file, message):
+    with open(log_file, "a", encoding="utf-8") as f:
+        f.write(message + "\n")
+
+
+def test_process_single_file():
+    chunk_size = 100
+    log_file = config.tmp_dir / "test.log"
+
+    # Clear the log file if it exists
+    log_file.unlink(missing_ok=True)
+
+    # Get all .txt files in the data directory
+    input_files = list(config.data_dir.glob("*.txt"))
+
+    assert len(input_files) > 0, f"No .txt files found in {config.data_dir}"
+
+    # Select the first file
+    input_path = input_files[0]
+    input_file = input_path.name
+
+    write_to_log(log_file, f"Processing file: {input_file}")
+
+    # Check if the file exists
+    assert input_path.exists(), f"Test file {input_file} not found in {config.data_dir}"
+
+    # Read original content
+    with open(input_path, "r", encoding="utf-8") as f:
+        original_content = f.read()
+
+    # Chunk the text
+    chunks = chunk_text(str(input_path), chunk_size=chunk_size)
+
+    # Save chunks to JSON
+    output_file = f"{input_path.stem}_chunks.json"
+    save_chunks_to_json(chunks, output_file)
+
+    # Verify the output file exists
+    output_path = config.tmp_dir / output_file
+    assert (
+        output_path.exists()
+    ), f"Output file {output_file} not created in {config.tmp_dir}"
+
+    # Read the saved JSON
+    with open(output_path, "r", encoding="utf-8") as f:
+        saved_data = json.load(f)
+
+    # Verify the structure of the saved data
+    assert (
+        "chunks" in saved_data
+    ), f"Saved JSON for {input_file} does not contain 'chunks' key"
+    assert isinstance(
+        saved_data["chunks"], list
+    ), f"Saved chunks for {input_file} is not a list"
+
+    # Verify the content of the chunks
+    reconstructed_text = "".join(saved_data["chunks"])
+    assert (
+        reconstructed_text == original_content
+    ), f"Reconstructed text does not match original for {input_file}"
+
+    # Verify chunk sizes
+    for i, chunk in enumerate(saved_data["chunks"][:-1]):
+        assert (
+            len(chunk) == chunk_size
+        ), f"Chunk {i} in {input_file} has incorrect length: {len(chunk)}"
+    assert (
+        len(saved_data["chunks"][-1]) <= chunk_size
+    ), f"Last chunk in {input_file} has incorrect length: {len(saved_data['chunks'][-1])}"
+
+    # Log information about the output file
+    write_to_log(log_file, f"\nOutput JSON file created: {output_path}")
+    write_to_log(log_file, f"Number of chunks: {len(saved_data['chunks'])}")
+    write_to_log(log_file, f"Total characters: {len(reconstructed_text)}")
+    write_to_log(log_file, f"First chunk: {saved_data['chunks'][0]}")
+    write_to_log(log_file, f"Last chunk: {saved_data['chunks'][-1]}")
+
+    # Note: We're not removing the output file so it can be inspected after the test
+    write_to_log(
+        log_file,
+        f"\nTest completed. You can find the output JSON file at: {output_path}",
+    )
+    write_to_log(log_file, f"This log file is located at: {log_file}")
+
+    print(f"Test completed. Check the log file at: {log_file}")
