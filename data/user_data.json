@@ -1,0 +1,39 @@
+{
+    "users": [
+      {
+        "id": 1,
+        "name": "Alice Johnson",
+        "email": "alice.johnson@example.com",
+        "age": 30,
+        "city": "New York"
+      },
+      {
+        "id": 2,
+        "name": "Bob Smith",
+        "email": "bob.smith@example.com",
+        "age": 25,
+        "city": "San Francisco"
+      },
+      {
+        "id": 3,
+        "name": "Charlie Brown",
+        "email": "charlie.brown@example.com",
+        "age": 35,
+        "city": "Chicago"
+      },
+      {
+        "id": 4,
+        "name": "Diana Miller",
+        "email": "diana.miller@example.com",
+        "age": 28,
+        "city": "Boston"
+      },
+      {
+        "id": 5,
+        "name": "Edward Davis",
+        "email": "edward.davis@example.com",
+        "age": 40,
+        "city": "Seattle"
+      }
+    ]
+  }

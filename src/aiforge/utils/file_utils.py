@@ -1,7 +1,7 @@
 # src/aiforge/utils/file_utils.py
 
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import List, Literal, Tuple, Union
 
 from aiforge.config import config
 
@@ -60,3 +60,34 @@ def get_file(
 
 
 # You can add more utility functions here as needed
+
+
+def open_project_file(
+    directory: Literal["data", "tmp"], filename: str, mode: str = "r"
+) -> Union[Path, None]:
+    """
+    Open a file from either the data or tmp directory of the project.
+
+    Args:
+        directory (Literal['data', 'tmp']): The directory to look in ('data' or 'tmp').
+        filename (str): The name of the file to open.
+        mode (str): The mode in which to open the file. Defaults to 'r' (read mode).
+
+    Returns:
+        Union[Path, None]: The opened file as a Path object if successful, None otherwise.
+
+    Raises:
+        ValueError: If an invalid directory is specified.
+    """
+    if directory == "data":
+        file_path = config.data_dir / filename
+    elif directory == "tmp":
+        file_path = config.tmp_dir / filename
+    else:
+        raise ValueError("Invalid directory specified. Use 'data' or 'tmp'.")
+
+    if "w" in mode or "a" in mode or file_path.exists():
+        return file_path.open(mode)
+    else:
+        print(f"File {filename} not found in {directory} directory.")
+        return None
