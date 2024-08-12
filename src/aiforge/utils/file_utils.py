@@ -1,29 +1,52 @@
-# src/aiforge/utils/file_utils.py
-
 from pathlib import Path
-from typing import List, Literal, Tuple, Union
+from typing import List, Literal, Optional, Tuple, Union
 
 from aiforge.config import config
+
+
+def get_directory(directory: Literal["data", "tmp", "test_data"]) -> Path:
+    """
+    Get the appropriate directory based on the input.
+
+    Args:
+        directory (Literal["data", "tmp", "test_data"]): The directory to use.
+
+    Returns:
+        Path: The path to the specified directory.
+
+    Raises:
+        ValueError: If an invalid directory is specified.
+    """
+    if directory == "data":
+        return config.data_dir
+    elif directory == "tmp":
+        return config.tmp_dir
+    elif directory == "test_data":
+        return config.test_data_dir
+    else:
+        raise ValueError(
+            "Invalid directory specified. Use 'data', 'tmp', or 'test_data'."
+        )
 
 
 def write_to_file(
     content: Union[str, List[Tuple[str, str]]],
     output_filename: str,
-    persistent: bool = False,
+    directory: Literal["data", "tmp", "test_data"] = "tmp",
 ) -> Path:
     """
-    Write content to a file in either the tmp or data directory.
+    Write content to a file in the specified directory.
 
     Args:
         content (Union[str, List[Tuple[str, str]]]): The content to write. If a string, writes directly.
                                                      If a list of tuples, each tuple should be (title, content).
         output_filename (str): The name of the file to save the content.
-        persistent (bool): If True, save to data folder; if False, save to tmp folder.
+        directory (Literal["data", "tmp", "test_data"]): The directory to save the file in. Defaults to "tmp".
 
     Returns:
         Path: The path to the written file.
     """
-    output_dir = config.data_dir if persistent else config.tmp_dir
+    output_dir = get_directory(directory)
     output_file_path = output_dir / output_filename
 
     if isinstance(content, str):
@@ -38,20 +61,22 @@ def write_to_file(
 
 
 def get_file(
-    filename: str, persistent: bool = False, binary: bool = False
+    filename: str,
+    directory: Literal["data", "tmp", "test_data"] = "tmp",
+    binary: bool = False,
 ) -> Union[str, bytes]:
     """
-    Retrieve content from a file in either the tmp or data directory.
+    Retrieve content from a file in the specified directory.
 
     Args:
         filename (str): The name of the file to retrieve.
-        persistent (bool): If True, look in data folder; if False, look in tmp folder.
+        directory (Literal["data", "tmp", "test_data"]): The directory to look in. Defaults to "tmp".
         binary (bool): If True, read file in binary mode.
 
     Returns:
         Union[str, bytes]: The content of the file.
     """
-    file_dir = config.data_dir if persistent else config.tmp_dir
+    file_dir = get_directory(directory)
     file_path = file_dir / filename
 
     mode = "rb" if binary else "r"
@@ -59,35 +84,62 @@ def get_file(
         return f.read()
 
 
-# You can add more utility functions here as needed
-
-
-def open_project_file(
-    directory: Literal["data", "tmp"], filename: str, mode: str = "r"
-) -> Union[Path, None]:
+def get_directory(directory: Literal["data", "tmp", "test_data"]) -> Path:
     """
-    Open a file from either the data or tmp directory of the project.
+    Get the appropriate directory based on the input.
 
     Args:
-        directory (Literal['data', 'tmp']): The directory to look in ('data' or 'tmp').
-        filename (str): The name of the file to open.
-        mode (str): The mode in which to open the file. Defaults to 'r' (read mode).
+        directory (Literal["data", "tmp", "test_data"]): The directory to use.
 
     Returns:
-        Union[Path, None]: The opened file as a Path object if successful, None otherwise.
+        Path: The path to the specified directory.
 
     Raises:
         ValueError: If an invalid directory is specified.
     """
     if directory == "data":
-        file_path = config.data_dir / filename
+        return config.data_dir
     elif directory == "tmp":
-        file_path = config.tmp_dir / filename
+        return config.tmp_dir
+    elif directory == "test_data":
+        return config.test_data_dir
     else:
-        raise ValueError("Invalid directory specified. Use 'data' or 'tmp'.")
+        raise ValueError(
+            "Invalid directory specified. Use 'data', 'tmp', or 'test_data'."
+        )
+
+
+from pathlib import Path
+from typing import IO, List, Literal, Tuple, Union
+
+from aiforge.config import config
+
+# ... (previous functions remain the same)
+
+
+def open_project_file(
+    filename: str,
+    directory: Literal["data", "tmp", "test_data"] = "tmp",
+    mode: str = "r",
+) -> IO:
+    """
+    Open a file from the specified directory of the project.
+
+    Args:
+        filename (str): The name of the file to open.
+        directory (Literal["data", "tmp", "test_data"]): The directory to look in. Defaults to "tmp".
+        mode (str): The mode in which to open the file. Defaults to 'r' (read mode).
+
+    Returns:
+        IO: The opened file object.
+
+    Raises:
+        FileNotFoundError: If the file is not found in the specified directory.
+    """
+    file_dir = get_directory(directory)
+    file_path = file_dir / filename
 
     if "w" in mode or "a" in mode or file_path.exists():
-        return file_path.open(mode)
+        return open(file_path, mode)
     else:
-        print(f"File {filename} not found in {directory} directory.")
-        return None
+        raise FileNotFoundError(f"File {filename} not found in {directory} directory.")

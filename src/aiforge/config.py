@@ -9,6 +9,7 @@ class AiForgeConfig:
         self.project_root = self._get_project_root()
         self.data_dir = self._get_directory("AIFORGE_DATA_DIR", "data")
         self.tmp_dir = self._get_directory("AIFORGE_TMP_DIR", "tmp")
+        self.test_data_dir = self._get_directory("AIFORGE_TEST_DATA_DIR", "test_data")
 
     def _get_project_root(self):
         # Try to get the project root from an environment variable
