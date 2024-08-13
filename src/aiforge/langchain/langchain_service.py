@@ -4,7 +4,7 @@ import logging
 import os
 from pathlib import Path
 
-import yaml
+import yaml  # type: ignore
 from langchain.memory import ConversationBufferMemory
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class LangChainService:
-
     def __init__(self):
         self.config = {
             "llm": {"default": "openai", "options": ["openai", "gemini"]},
