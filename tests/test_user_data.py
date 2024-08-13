@@ -2,7 +2,6 @@ import json
 
 import pytest
 
-from aiforge.config import config
 from aiforge.utils.file_utils import open_project_file, write_to_file
 
 

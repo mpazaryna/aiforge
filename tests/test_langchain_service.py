@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from aiforge.langchain.langchain_service import LangChainService, get_langchain_service
+from aiforge.langchain.langchain_service import get_langchain_service
 
 
 @pytest.fixture(params=["openai", "gemini"])

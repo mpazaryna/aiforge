@@ -13,7 +13,6 @@ The main class, AiForgeConfig, manages the following directories:
 
 Usage:
     from aiforge.config import config
-    
     # Accessing configuration directories
     data_dir = config.data_dir
     tmp_dir = config.tmp_dir

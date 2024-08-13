@@ -1,7 +1,6 @@
 # tests/test_enhanced_chunking.py
 
 import json
-from pathlib import Path
 
 import pytest
 

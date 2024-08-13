@@ -1,5 +1,3 @@
-import pytest
-
 from aiforge.lab.hello_world import greet
 
 

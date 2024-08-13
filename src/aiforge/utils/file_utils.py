@@ -1,10 +1,10 @@
 from pathlib import Path
-from typing import List, Literal, Optional, Tuple, Union
+from typing import IO, List, Literal, Tuple, Union
 
 from aiforge.config import config
 
 
-def get_directory(directory: Literal["data", "tmp", "test_data"]) -> Path:
+def get_directory_original(directory: Literal["data", "tmp", "test_data"]) -> Path:
     """
     Get the appropriate directory based on the input.
 
@@ -107,14 +107,6 @@ def get_directory(directory: Literal["data", "tmp", "test_data"]) -> Path:
         raise ValueError(
             "Invalid directory specified. Use 'data', 'tmp', or 'test_data'."
         )
-
-
-from pathlib import Path
-from typing import IO, List, Literal, Tuple, Union
-
-from aiforge.config import config
-
-# ... (previous functions remain the same)
 
 
 def open_project_file(
