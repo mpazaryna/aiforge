@@ -64,9 +64,9 @@ class AiForgeConfig:
         Initializes the AiForgeConfig instance by setting up all required directories.
         """
         self.project_root = self._get_project_root()
-        self.data_dir = self._get_directory("AIFORGE_DATA_DIR", "data")
+        self.data_dir = self._get_directory("AIFORGE_DATA_DIR", "data/out")
         self.tmp_dir = self._get_directory("AIFORGE_TMP_DIR", "tmp")
-        self.test_data_dir = self._get_directory("AIFORGE_TEST_DATA_DIR", "data_test")
+        self.test_data_dir = self._get_directory("AIFORGE_TEST_DATA_DIR", "data/test")
 
     def _get_project_root(self):
         """
