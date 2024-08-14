@@ -5,3 +5,4 @@
 ## CI/CD
 
 - OPENAI_API_KEY must be visible for CI/CD to work.
+- Added, but still failing.
