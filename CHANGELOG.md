@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.1.0] - 2024-08-13 15:20:51 -0400
 
 ### Features
+
 - utils and test for getting a file ([`7d8be19`](https://github.com/mpazaryna/aiforge/commit/7d8be19dd6fb8f65fe4a4ec889daa26ab345a45c))
 - initial commit chunking code ([`8161a70`](https://github.com/mpazaryna/aiforge/commit/8161a70afffa6af1bf15ffafb2cbdeb625c79a7b))
 - updated config ([`fdc184e`](https://github.com/mpazaryna/aiforge/commit/fdc184e563298e33d732003d2dfb1726d2e52e7e))
@@ -16,12 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add hello_world and test ([`66bdeb8`](https://github.com/mpazaryna/aiforge/commit/66bdeb89b8ee0a33b042427dc5c10fe0efb17ee7))
 
 ### Bug Fixes
+
 - updated data folder ([`d8b56d7`](https://github.com/mpazaryna/aiforge/commit/d8b56d780463f769d1fb41a017b1a15545b6b5db))
 
 ### Documentation
+
 No docs changes in this release.
 
 ### Chores
+
 - adding ci badge to readme ([`c4ae261`](https://github.com/mpazaryna/aiforge/commit/c4ae2616dd6a574f3bc38d0beac5179370464bf4))
 - adding packages ([`bd676e6`](https://github.com/mpazaryna/aiforge/commit/bd676e64b32088692fff1f15287eea699592b9ea))
 - more packages ([`7b71910`](https://github.com/mpazaryna/aiforge/commit/7b71910fc9857d1fa24a0e409b763ee65a636eef))
@@ -36,4 +40,3 @@ No docs changes in this release.
 - refactor to interate through all files in a directory ([`447f8f4`](https://github.com/mpazaryna/aiforge/commit/447f8f4ce5458051b817d1b75ad23ade0bcc3d87))
 - fixes to move over langchain_service ([`8177ba4`](https://github.com/mpazaryna/aiforge/commit/8177ba4ffb4cbcf6681d7b7e54c6073b085d7d6c))
 - update function with docstring ([`1882703`](https://github.com/mpazaryna/aiforge/commit/1882703c0c1154b67aea4eeafbc069caa946c9eb))
-

@@ -11,7 +11,7 @@ async def langchain_service(request):
     api_key_env = "OPENAI_API_KEY" if llm_type == "openai" else "GOOGLE_API_KEY"
 
     if not os.getenv(api_key_env):
-        pytest.skip(f"{api_key_env} not set in environment")
+        pytest.skip(f"{api_key_env} not in environment")
 
     print(f"\nCreating service for {llm_type}")
     service = await get_langchain_service()

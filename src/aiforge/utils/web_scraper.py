@@ -69,7 +69,7 @@ def save_wikipedia_pages(
 
     with open(output_file_path, "w", encoding="utf-8") as f:
         for url, html_content in content:
-            f.write(f"Content from {url}:\n{html_content}\n\n")
+            f.write(f"Content from {url}: \n{html_content}\n\n")
 
     print(f"Content saved to {output_file_path}")
     return output_file_path

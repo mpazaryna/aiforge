@@ -17,7 +17,7 @@ def chunk_text(file_name: str, chunk_size: int = 1000) -> List[str]:
     """
     file_path = config.data_dir / file_name
     if not file_path.exists():
-        raise FileNotFoundError(f"File {file_name} not found in data directory")
+        raise FileNotFoundError(f"File {file_name} not in data directory")
 
     chunks = []
     with open(file_path, "r") as file:
