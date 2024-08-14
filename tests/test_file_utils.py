@@ -1,15 +1,9 @@
 import json
-from pathlib import Path
 
 import pytest
 
 from aiforge.config import config
-from aiforge.utils.file_utils import (
-    get_directory,
-    get_file,
-    open_project_file,
-    write_to_file,
-)
+from aiforge.utils.file_utils import get_directory, get_file, write_to_file
 
 
 @pytest.fixture(scope="module")
