@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.2.0] - 2024-08-15 13:56:53 -0400
+
+### Features
+
+No feat changes in this release.
+
+### Bug Fixes
+
+No fix changes in this release.
+
+### Documentation
+
+- added changelog ([`6d36039`](https://github.com/mpazaryna/aiforge/commit/6d36039f05e10fa23764d35be75a7ee5b88407a9))
+
+### Chores
+
+- housekeeping prior to tagging release ([`4990122`](https://github.com/mpazaryna/aiforge/commit/49901220c6176ac6bbb2d5d7d60861b52355a2fe))
+- update for lightning.ai ([`27f643b`](https://github.com/mpazaryna/aiforge/commit/27f643b9b7f7cfbe2221f7cdd6e48dd64af15ffd))
+- fix flake8 fail on ci/cd ([`2be924a`](https://github.com/mpazaryna/aiforge/commit/2be924a902565c4144a4216d6ab594046488b4d3))
+- additional refactors and add pre-commit ([`1015dde`](https://github.com/mpazaryna/aiforge/commit/1015dde7593f2a5973ebeadade8a379b9c4ac023))
+- additional changes for ci/cd ([`c3fbac4`](https://github.com/mpazaryna/aiforge/commit/c3fbac4bf563a9d2f7f4a42f5744a34245535eb9))
+- additional updates to address flake8 issue ([`afe32f7`](https://github.com/mpazaryna/aiforge/commit/afe32f7a8880133b194f0d99cd577ef84ff22e1c))
+- remove cruft from repo ([`f416902`](https://github.com/mpazaryna/aiforge/commit/f416902624909da94925234d652678cb796c26a6))
+- add env for OPENAI_API_KEY ([`78db6f8`](https://github.com/mpazaryna/aiforge/commit/78db6f840e27a4518e27a587d49c0ca14e8c687b))
+- updated environments ([`43aa805`](https://github.com/mpazaryna/aiforge/commit/43aa8059ef0b7b71e62a1527d7fbc6c3d96a7649))
+- add notebooks from other projects ([`7c6daba`](https://github.com/mpazaryna/aiforge/commit/7c6daba041703af470e7f1a6572044df93adeca1))
+- extract code from notebook into a py file ([`8badbd7`](https://github.com/mpazaryna/aiforge/commit/8badbd71116ace6b6f29d2090125b2d18337c8e1))
+- unit test for config module ([`fc32215`](https://github.com/mpazaryna/aiforge/commit/fc32215a4bb0f221747542e6f67adac5aba9246b))
+
 ## [v0.1.0] - 2024-08-13 15:20:51 -0400
 
 ### Features
