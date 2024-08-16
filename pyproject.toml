@@ -49,3 +49,8 @@ ignore_missing_imports = true
 exclude = [
     '^tests/'
 ]
+
+[tool.poetry.scripts]
+pre-commit-all = "scripts.run_pre_commit:run_pre_commit"
+changelog = "scripts.run_changelog:run_changelog_generator"
+run-command = "scripts.command_runner:main"
