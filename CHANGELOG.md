@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.3.0] - 2024-08-18 09:59:09 -0400
+
+### Features
+
+- add async_scraper into the project ([`865e214`](https://github.com/mpazaryna/aiforge/commit/865e21479641bdc63ae7a2d56a8a128677f4ac56))
+
+### Bug Fixes
+No fix changes in this release.
+
+### Documentation
+
+- insights file ([`9939023`](https://github.com/mpazaryna/aiforge/commit/993902329cc44c5660d2a95bba1b255d527e4802))
+- updated README, adding docs folder with summary and plan ([`e61e89f`](https://github.com/mpazaryna/aiforge/commit/e61e89f190ca45a14292b8ee331b6736e25be614))
+
+### Chores
+
+- small fixes to resolve ci/cd issue ([`02edcad`](https://github.com/mpazaryna/aiforge/commit/02edcad872b28397c04a944d01b4727f054afe00))
+- adjust test scrape - failing in github ci ([`3f8116e`](https://github.com/mpazaryna/aiforge/commit/3f8116ed8999a17ada7776fc676bb1d5bc14c3fc))
+- updated scripts ([`80ac9db`](https://github.com/mpazaryna/aiforge/commit/80ac9db11eca237d19ea98b6930c1f2da503ee99))
+- updated CHANGELOG.md ([`a93aba9`](https://github.com/mpazaryna/aiforge/commit/a93aba95c348b27202f3f38392c53fc0a728e496))
+
 ## [v0.2.0] - 2024-08-15 13:56:53 -0400
 
 ### Features

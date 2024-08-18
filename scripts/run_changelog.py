@@ -11,7 +11,7 @@ def run_changelog_generator():
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Construct the path to the shell script
-    shell_script_path = os.path.join(script_dir, "generate_changelog.sh")
+    shell_script_path = os.path.join(script_dir, "changelog_generator.sh")
 
     # Make sure the shell script is executable
     os.chmod(shell_script_path, 0o755)
