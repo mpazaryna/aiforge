@@ -42,9 +42,11 @@ While it might seem redundant at first glance, having the import in both files i
 #config #testing #importStrategy #bestPractices #codeOrganization
 
 ## Date
+
 2024-08-16
 
 ## Related Files
+
 - `async_scraper.py`
 - `test_async_scraper.py`
 - `config.py`

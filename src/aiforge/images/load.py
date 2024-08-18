@@ -1,6 +1,6 @@
-# Content of _load.py:
 import logging
 from io import BytesIO
+from typing import Union
 
 from PIL import Image
 
@@ -14,7 +14,11 @@ logger = logging.getLogger(__name__)
 async def load_image(file_name: str) -> Image.Image:
     try:
         # Get the file content as bytes
-        image_data = get_file(file_name, binary=True)
+        image_data: Union[str, bytes] = get_file(file_name, binary=True)
+
+        # Ensure image_data is bytes
+        if isinstance(image_data, str):
+            image_data = image_data.encode("utf-8")
 
         # Create an image object from the bytes data
         image = Image.open(BytesIO(image_data))

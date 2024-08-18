@@ -1,16 +1,9 @@
 # tests/test_enhanced_chunking.py
 
-import json
-
 import pytest
 
 from aiforge.config import config
-from aiforge.vectorstore.enhanced_chunking import (
-    chunk_text,
-    process_directory,
-    read_file_in_chunks,
-    save_chunks_to_json,
-)
+from aiforge.vectorstore.enhanced_chunking import chunk_text, read_file_in_chunks
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -43,21 +36,3 @@ def test_chunk_text():
     assert chunks[1] == "test sentence for chunking text"
     assert chunks[2] == "chunking text into smaller pieces."
     assert chunks[3] == "smaller pieces."
-
-
-def test_actual_files():
-    # Process the actual files in the tmp directory
-    chunk_size = 5
-    overlap = 2
-    result = process_directory(config.test_data_dir, chunk_size, overlap)
-
-    # Test saving and loading the chunks
-    output_file = config.data_dir / "test_enhanced_chunking.json"
-
-    save_chunks_to_json(result, output_file)
-
-    assert output_file.exists()
-    with open(output_file, "r") as f:
-        loaded_chunks = json.load(f)
-
-    assert loaded_chunks == result

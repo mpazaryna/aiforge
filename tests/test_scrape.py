@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 import pytest
 
@@ -48,11 +47,9 @@ async def test_fetch_wikipedia_pages(wikipedia_urls):
         assert url in wikipedia_urls, f"Unexpected URL: {url}"
         assert content, "Empty content fetched"
         if "Python" in url:
-            assert "Python" in content, f"'Python' not found in content for {url}"
+            assert "Python" in content, f"'Python' notin content for {url}"
         elif "Asynchronous" in url:
-            assert (
-                "Asynchronous" in content
-            ), f"'Asynchronous' not found in content for {url}"
+            assert "Asynchronous" in content, f"'Asynchronous' not in content for {url}"
 
 
 @pytest.mark.asyncio
@@ -118,4 +115,4 @@ async def test_save_wikipedia_pages(wikipedia_urls, output_files):
             content = f.read()
         assert (
             "Python" in content or "Asynchronous" in content
-        ), f"Expected content not found in {file_path}"
+        ), f"Expected content not in {file_path}"

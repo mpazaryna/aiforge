@@ -23,7 +23,7 @@ The `cleanup` function is a pytest fixture designed to manage the cleanup of tes
 
 ## Key Components
 
-1. **Pytest Fixture Decorator**: 
+1. **Pytest Fixture Decorator**:
    - `@pytest.fixture(autouse=True)`: This decorator marks the function as a pytest fixture and sets it to run automatically for all tests in the file.
 
 2. **Function Parameters**:
