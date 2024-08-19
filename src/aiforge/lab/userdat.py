@@ -25,7 +25,7 @@ def parse_user_data(file_path=None):
 
         return users
     except FileNotFoundError:
-        print(f"Error: File not found in specified location")
+        print("Error: File not found in specified location")
         return []
     except Exception as e:
         print(f"Error: {str(e)}")

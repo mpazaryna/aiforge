@@ -1,51 +1,81 @@
 import json
+import logging
 from typing import Any, Dict, List, Union
 
 from aiforge.utils.file_utils import get_file, write_to_file
 
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
-def process_json_data(json_data: Union[str, Dict, List], key_path: str = None) -> Any:
+
+class JSONProcessingError(Exception):
+    """Custom exception class for JSON processing errors."""
+
+    pass
+
+
+def parse_json_data(json_data: Union[str, bytes, Dict, List]) -> Union[Dict, List]:
+    """Parse JSON data if it's a string or bytes, otherwise return as is."""
+    if isinstance(json_data, (str, bytes)):
+        try:
+            return json.loads(json_data)
+        except json.JSONDecodeError as e:
+            raise JSONProcessingError(f"Invalid JSON format: {str(e)}")
+    return json_data
+
+
+def navigate_json(data: Union[Dict, List], keys: List[str]) -> Any:
+    """Navigate through the JSON structure based on the given keys."""
+    for i, key in enumerate(keys):
+        if isinstance(data, dict):
+            if key not in data:
+                raise JSONProcessingError(
+                    f"Key '{key}' not found at level {i + 1} of the JSON structure"
+                )
+            data = data[key]
+        elif isinstance(data, list) and key.isdigit():
+            index = int(key)
+            if index >= len(data):
+                raise JSONProcessingError(
+                    f"Index {index} is out of range at level {i + 1} of the JSON structure"
+                )
+            data = data[index]
+        else:
+            raise JSONProcessingError(
+                f"Invalid key '{key}' at level {i + 1} for the current JSON structure"
+            )
+    return data
+
+
+def process_json_data(
+    json_data: Union[str, bytes, Dict, List], key_path: str = None
+) -> Any:
     """
     Process JSON data and return the specified data based on the key path.
 
-    :param json_data: JSON data as a string, dictionary, or list
+    :param json_data: JSON data as a string, bytes, dictionary, or list
     :param key_path: Dot-separated string indicating the path to the desired data
     :return: The data at the specified key path, or the entire data if no key path is provided
+    :raises JSONProcessingError: If there's an error processing the JSON data
     """
     try:
-        # Parse the JSON data if it's a string
-        if isinstance(json_data, str):
-            data = json.loads(json_data)
-        else:
-            data = json_data
+        data = parse_json_data(json_data)
 
-        # If no key path is provided, return the entire data
         if not key_path:
             return data
 
-        # Navigate through the data structure based on the key path
         keys = key_path.split(".")
-        for key in keys:
-            if isinstance(data, dict):
-                if key not in data:
-                    return None
-                data = data[key]
-            elif isinstance(data, list) and key.isdigit():
-                index = int(key)
-                if index >= len(data):
-                    return None
-                data = data[index]
-            else:
-                return None
+        return navigate_json(data, keys)
 
-        return data
-
-    except json.JSONDecodeError:
-        print("Error: Invalid JSON format")
-        return None
+    except JSONProcessingError as e:
+        logger.info(f"JSON processing error: {str(e)}")  # Changed to INFO level
+        raise
     except Exception as e:
-        print(f"Error processing JSON data: {str(e)}")
-        return None
+        logger.error(f"Unexpected error processing JSON data: {str(e)}")
+        raise JSONProcessingError(f"Unexpected error: {str(e)}")
 
 
 def read_json_file(filename: str, directory: str = "tmp", key_path: str = None) -> Any:
@@ -61,7 +91,13 @@ def read_json_file(filename: str, directory: str = "tmp", key_path: str = None) 
         json_data = get_file(filename, directory)
         return process_json_data(json_data, key_path)
     except FileNotFoundError:
-        print(f"Error: File {filename} not found in {directory} directory")
+        logger.info(f"File {filename} not found in {directory} directory")
+        return None
+    except JSONProcessingError as e:
+        logger.info(f"Error processing JSON file: {str(e)}")
+        return None
+    except Exception as e:
+        logger.error(f"Unexpected error reading JSON file: {str(e)}")
         return None
 
 
@@ -79,7 +115,10 @@ def write_json_file(
     try:
         json_data = json.dumps(data, indent=2)
         write_to_file(json_data, filename, directory)
+        logger.info(
+            f"Successfully wrote JSON data to {filename} in {directory} directory"
+        )
         return True
     except Exception as e:
-        print(f"Error writing JSON data to file: {str(e)}")
+        logger.error(f"Error writing JSON data to file: {str(e)}")
         return False

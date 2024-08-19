@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 
 tmp/chroma-populate/
+
+logs/pytest.log

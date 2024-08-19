@@ -29,6 +29,11 @@ class AiForgeConfig:
         """Lazy-loaded test data directory."""
         return self._get_directory("AIFORGE_TEST_DATA_DIR", "data/test")
 
+    @cached_property
+    def logs_dir(self):
+        """Lazy-loaded logs directory."""
+        return self._get_directory("AIFORGE_LOGS_DIR", "logs")
+
     def _get_directory(self, env_var, default_name):
         """
         Sets up a directory based on environment variables or defaults.
@@ -45,7 +50,12 @@ class AiForgeConfig:
         """
         Ensures all directories exist. Call this method explicitly when you want to create the directories.
         """
-        for dir_path in [self.data_dir, self.tmp_dir, self.test_data_dir]:
+        for dir_path in [
+            self.data_dir,
+            self.tmp_dir,
+            self.test_data_dir,
+            self.logs_dir,
+        ]:
             dir_path.mkdir(parents=True, exist_ok=True)
 
 
