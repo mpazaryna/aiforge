@@ -93,7 +93,7 @@ def read_json_file(
         json_data = get_file(filename, directory)
         return process_json_data(json_data, key_path)
     except FileNotFoundError:
-        logger.info(f"File {filename} not found in {directory} directory")
+        logger.info(f"File {filename} not in {directory} directory")
         return None
     except JSONProcessingError as e:
         logger.info(f"Error processing JSON file: {str(e)}")

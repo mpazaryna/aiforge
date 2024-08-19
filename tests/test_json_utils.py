@@ -91,7 +91,7 @@ def test_read_json_file_not_found(caplog):
     caplog.set_level(logging.INFO)
     result = read_json_file("non_existent.json", "tmp")
     assert result is None
-    assert "File non_existent.json not found in tmp directory" in caplog.text
+    assert "File non_existent.json not in tmp directory" in caplog.text
 
 
 def test_write_json_file(caplog):

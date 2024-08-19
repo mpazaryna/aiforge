@@ -1,6 +1,5 @@
 from typing import Dict, List
 
-from aiforge.config import config
 from aiforge.utils.json_utils import read_json_file
 
 
@@ -14,7 +13,7 @@ def load_asanas() -> List[Dict[str, str]]:
 
 
 def print_asanas(asanas: List[Dict[str, str]]):
-    print(f"Loaded {len(asanas)} asanas:")
+    print(f"Loaded {len(asanas)} asanas: ")
     for asana in asanas[:5]:  # Print first 5 asanas as an example
         print(
             f"ID: {asana['id']}, Name: {asana['name']}, Sanskrit: {asana['sanskrit']}"

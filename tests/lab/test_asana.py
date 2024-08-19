@@ -1,5 +1,3 @@
-import pytest
-
 from aiforge.lab.asana import load_asanas, print_asanas
 
 
@@ -26,7 +24,7 @@ def test_print_asanas(capsys):
     asanas = load_asanas()
     print_asanas(asanas)
     captured = capsys.readouterr()
-    assert f"Loaded {len(asanas)} asanas:" in captured.out
+    assert f"Loaded {len(asanas)} asanas: " in captured.out
     assert "ID: 1, Name: Mountain Pose, Sanskrit: Tadasana" in captured.out
     assert "..." in captured.out
 
