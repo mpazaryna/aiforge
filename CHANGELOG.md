@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add async_scraper into the project ([`865e214`](https://github.com/mpazaryna/aiforge/commit/865e21479641bdc63ae7a2d56a8a128677f4ac56))
 
 ### Bug Fixes
+
 No fix changes in this release.
 
 ### Documentation
