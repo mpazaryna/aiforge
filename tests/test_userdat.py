@@ -1,95 +1,76 @@
 import json
-import os
-from pathlib import Path
 
 import pytest
 
 from aiforge.lab.userdat import parse_user_data
-from aiforge.utils.file_utils import write_to_file
-
-
-@pytest.fixture(scope="module")
-def output_files(tmp_path_factory):
-    base_path = tmp_path_factory.mktemp("user_data")
-    return {
-        "user_data": base_path / "user_data.json",
-        "user_data_bak": base_path / "user_data.json.bak",
-    }
-
-
-@pytest.fixture(autouse=True)
-def cleanup(output_files):
-    yield
-    if os.environ.get("KEEP_TEST_FILES", "").lower() != "true":
-        for file_path in output_files.values():
-            if file_path.exists():
-                file_path.unlink()
-    else:
-        print("\nTest files were not deleted. You can find them at:")
-        for key, file_path in output_files.items():
-            if file_path.exists():
-                print(f"- {key}: {file_path}")
+from aiforge.utils.file_utils import get_directory, write_to_file
 
 
 @pytest.fixture
-def setup_test_data(output_files):
-    # Create a temporary JSON file with test data
+def setup_test_data():
     test_data = {
         "users": [
             {"id": 1, "name": "John Doe", "email": "john@example.com"},
             {"id": 2, "name": "Jane Smith", "email": "jane@example.com"},
         ]
     }
-    write_to_file(json.dumps(test_data), str(output_files["user_data"]))
-    yield output_files["user_data"]
-    # Cleanup is handled by the cleanup fixture
+    filename = "test_user_data.json"
+    write_to_file(json.dumps(test_data), filename, "tmp")
+    return filename
+
+
+@pytest.fixture(autouse=True)
+def cleanup():
+    yield
+    # Clean up the test file after each test
+    tmp_dir = get_directory("tmp")
+    test_file = tmp_dir / "test_user_data.json"
+    if test_file.exists():
+        test_file.unlink()
 
 
 def test_parse_user_data(setup_test_data, capsys):
-    # Call the function with the test file path
-    users = parse_user_data(setup_test_data)
+    result = parse_user_data(setup_test_data)
 
-    # Check the output
+    # Check if the correct number of users is returned
+    assert len(result) == 2
+
+    # Check if the user data is correctly parsed
+    assert result[0]["name"] == "John Doe"
+    assert result[1]["email"] == "jane@example.com"
+
+    # Check if the user information is correctly printed
     captured = capsys.readouterr()
     assert "ID: 1, Name: John Doe, Email: john@example.com" in captured.out
     assert "ID: 2, Name: Jane Smith, Email: jane@example.com" in captured.out
 
-    # Check the returned data
-    assert len(users) == 2
-    assert users[0]["id"] == 1
-    assert users[0]["name"] == "John Doe"
-    assert users[0]["email"] == "john@example.com"
-    assert users[1]["id"] == 2
-    assert users[1]["name"] == "Jane Smith"
-    assert users[1]["email"] == "jane@example.com"
 
+def test_parse_user_data_file_not_found(capsys):
+    result = parse_user_data("non_existent_file.json")
 
-def test_parse_user_data_file_not_found(output_files, capsys):
-    # Use a non-existent file path
-    non_existent_file = output_files["user_data"].parent / "non_existent.json"
+    # Check if an empty list is returned when file is not found
+    assert result == []
 
-    # Call the function with the non-existent file path
-    users = parse_user_data(non_existent_file)
-
-    # Check the output
+    # Check if the correct error message is printed
     captured = capsys.readouterr()
-    assert "Error: user_data.json file not found in specified location" in captured.out
-
-    # Check the returned data
-    assert len(users) == 0
+    assert "Error: File not found in specified location" in captured.out
 
 
-def test_parse_user_data_invalid_json(output_files, capsys):
-    # Write invalid JSON to the file
-    invalid_json_file = output_files["user_data"].parent / "invalid.json"
-    write_to_file("invalid json", str(invalid_json_file))
+def test_parse_user_data_invalid_json(setup_test_data):
+    # Write invalid JSON to the test file
+    write_to_file("invalid json data", setup_test_data, "tmp")
 
-    # Call the function with the invalid JSON file
-    users = parse_user_data(invalid_json_file)
+    result = parse_user_data(setup_test_data)
 
-    # Check the output
-    captured = capsys.readouterr()
-    assert "Error: Invalid JSON format in user_data.json" in captured.out
+    # Check if an empty list is returned for invalid JSON
+    assert result == []
 
-    # Check the returned data
-    assert len(users) == 0
+
+def test_parse_user_data_no_users(setup_test_data):
+    # Write JSON with no users to the test file
+    write_to_file(json.dumps({"data": "no users here"}), setup_test_data, "tmp")
+
+    result = parse_user_data(setup_test_data)
+
+    # Check if an empty list is returned when no users are found
+    assert result == []

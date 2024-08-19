@@ -1,7 +1,5 @@
-import json
-from pathlib import Path
-
 from aiforge.utils.file_utils import get_file
+from aiforge.utils.json_utils import process_json_data
 
 
 def parse_user_data(file_path=None):
@@ -10,24 +8,27 @@ def parse_user_data(file_path=None):
         if file_path is None:
             json_data = get_file("user_data.json", directory="tmp")
         else:
-            with open(file_path, "r") as f:
-                json_data = f.read()
+            json_data = get_file(file_path)
 
-        # Parse the JSON data
-        data = json.loads(json_data)
+        # Process the JSON data
+        users = process_json_data(json_data, key_path="users")
+
+        if users is None:
+            print("Error: No user data found or invalid JSON structure")
+            return []
 
         # Extract and print user information
-        for user in data.get("users", []):
+        for user in users:
             print(
                 f"ID: {user.get('id')}, Name: {user.get('name')}, Email: {user.get('email')}"
             )
 
-        return data.get("users", [])
+        return users
     except FileNotFoundError:
-        print(f"Error: user_data.json file not found in specified location")
+        print(f"Error: File not found in specified location")
         return []
-    except json.JSONDecodeError:
-        print("Error: Invalid JSON format in user_data.json")
+    except Exception as e:
+        print(f"Error: {str(e)}")
         return []
 
 
