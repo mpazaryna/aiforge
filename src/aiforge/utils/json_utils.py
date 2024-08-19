@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from aiforge.utils.file_utils import get_file, write_to_file
 
@@ -51,7 +51,7 @@ def navigate_json(data: Union[Dict, List], keys: List[str]) -> Any:
 
 
 def process_json_data(
-    json_data: Union[str, bytes, Dict, List], key_path: str = None
+    json_data: Union[str, bytes, Dict, List], key_path: Optional[str] = None
 ) -> Any:
     """
     Process JSON data and return the specified data based on the key path.
@@ -78,7 +78,9 @@ def process_json_data(
         raise JSONProcessingError(f"Unexpected error: {str(e)}")
 
 
-def read_json_file(filename: str, directory: str = "tmp", key_path: str = None) -> Any:
+def read_json_file(
+    filename: str, directory: str = "tmp", key_path: Optional[str] = None
+) -> Any:
     """
     Read JSON data from a file in the specified directory and process it.
 
