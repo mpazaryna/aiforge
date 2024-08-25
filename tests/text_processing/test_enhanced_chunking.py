@@ -3,7 +3,7 @@
 import pytest
 
 from aiforge.config import config
-from aiforge.vectorstore.enhanced_chunking import chunk_text, read_file_in_chunks
+from aiforge.text_processing.enhanced_chunking import chunk_text, read_file_in_chunks
 
 
 @pytest.fixture(scope="session", autouse=True)
