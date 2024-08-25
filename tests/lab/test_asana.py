@@ -1,5 +1,5 @@
 from aiforge.lab.asana import load_asanas, print_asanas
-
+import logging
 
 def test_load_asanas():
     asanas = load_asanas()
@@ -20,17 +20,17 @@ def test_load_asanas_content():
     assert "Warrior I" in asana_names
 
 
-def test_print_asanas(capsys):
+def test_print_asanas(caplog):
     asanas = load_asanas()
-    print_asanas(asanas)
-    captured = capsys.readouterr()
-    assert f"Loaded {len(asanas)} asanas: " in captured.out
-    assert "ID: 1, Name: Mountain Pose, Sanskrit: Tadasana" in captured.out
-    assert "..." in captured.out
+    with caplog.at_level(logging.INFO):
+        print_asanas(asanas)
+        assert f"Loaded {len(asanas)} asanas: " in caplog.text
+        assert "ID: 1, Name: Mountain Pose, Sanskrit: Tadasana" in caplog.text
+        assert "..." in caplog.text
 
 
-def test_print_asanas_empty_list(capsys):
-    print_asanas([])
-    captured = capsys.readouterr()
-    assert "Loaded 0 asanas:" in captured.out
-    assert "..." in captured.out
+def test_print_asanas_empty_list(caplog):
+    with caplog.at_level(logging.INFO):
+        print_asanas([])
+        assert "Loaded 0 asanas:" in caplog.text
+        assert "..." in caplog.text
