@@ -4,28 +4,30 @@ from anthropic import Anthropic, AsyncAnthropic
 from termcolor import colored
 import time
 import asyncio
-import aiohttp
-from typing import Optional, Any, Dict, List, Union
+from typing import Optional, Any, Dict, List
 import logging
+import httpx
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+
 class UnifiedApis:
-    def __init__(self,
-                 name: str = "Unified Apis",
-                 api_key: str = "",
-                 max_history_words: int = 10000,
-                 max_words_per_message: Optional[int] = None,
-                 json_mode: bool = False,
-                 stream: bool = True,
-                 use_async: bool = False,
-                 max_retry: int = 3,
-                 provider: str = "anthropic",
-                 model: Optional[str] = None,
-                 should_print_init: bool = True,
-                 print_color: str = "green"
-                 ):
+    def __init__(
+        self,
+        name: str = "Unified Apis",
+        api_key: str = "",
+        max_history_words: int = 10000,
+        max_words_per_message: Optional[int] = None,
+        json_mode: bool = False,
+        stream: bool = True,
+        use_async: bool = False,
+        max_retry: int = 3,
+        provider: str = "anthropic",
+        model: Optional[str] = None,
+        should_print_init: bool = True,
+        print_color: str = "green",
+    ):
         """
         Initialize the UnifiedApis instance.
 
@@ -59,7 +61,12 @@ class UnifiedApis:
         self._initialize_client()
 
         if should_print_init:
-            print(colored(f"{self.name} initialized with provider={self.provider}, model={self.model}, json_mode={json_mode}, stream={stream}, use_async={use_async}, max_history_words={max_history_words}, max_words_per_message={max_words_per_message}", "red"))
+            print(
+                colored(
+                    f"{self.name} initialized with provider={self.provider}, model={self.model}, json_mode={json_mode}, stream={stream}, use_async={use_async}, max_history_words={max_history_words}, max_words_per_message={max_words_per_message}",
+                    "red",
+                )
+            )
 
     def _get_default_model(self) -> str:
         """Return the default model for the selected provider."""
@@ -87,7 +94,11 @@ class UnifiedApis:
         if self.provider == "openai":
             self.client = OpenAI(api_key=self.api_key)
         elif self.provider == "anthropic":
-            self.client = AsyncAnthropic(api_key=self.api_key) if self.use_async else Anthropic(api_key=self.api_key)
+            self.client = (
+                AsyncAnthropic(api_key=self.api_key)
+                if self.use_async
+                else Anthropic(api_key=self.api_key)
+            )
         elif self.provider == "openrouter":
             base_url = "https://openrouter.ai/api/v1"
             self.client = OpenAI(base_url=base_url, api_key=self.api_key)
@@ -114,7 +125,9 @@ class UnifiedApis:
 
     def print_history_length(self) -> None:
         """Print the current length of the conversation history in words."""
-        history_length = sum(len(str(message["content"]).split()) for message in self.history)
+        history_length = sum(
+            len(str(message["content"]).split()) for message in self.history
+        )
         print(f"\nCurrent history length is {history_length} words")
 
     async def print_history_length_async(self) -> None:
@@ -148,156 +161,214 @@ class UnifiedApis:
         await self.add_message_async("user", prompt)
         return await self.get_response_async(prompt, color, should_print, **kwargs)
 
-    def get_response(self, prompt, color: Optional[str] = None, should_print: bool = True, **kwargs: Any) -> Any:
-        """
-        Get a response from the AI model.
-
-        :param prompt: The user's input message
-        :param color: Color for printing the response (if None, uses default)
-        :param should_print: Whether to print the response
-        :param kwargs: Additional keyword arguments for the API call
-        :return: The assistant's response
-        """
+    def get_response(
+        self,
+        prompt,
+        color: Optional[str] = None,
+        should_print: bool = True,
+        **kwargs: Any,
+    ) -> Any:
         self.add_message("user", prompt)
-        retries = 0
-        while retries < self.max_retry:
+        return self._process_response(color, should_print, **kwargs)
+
+    def _process_response(
+        self, color: Optional[str] = None, should_print: bool = True, **kwargs: Any
+    ) -> Any:
+        for _ in range(self.max_retry):
             try:
-                if self.provider == "openai" or self.provider == "openrouter":
-                    response = self.client.chat.completions.create(
-                        model=self.model,
-                        messages=[{"role": "system", "content": self.system_message}] + self.history,
-                        stream=self.stream,
-                        max_tokens=kwargs.get('max_tokens', 4000),
-                        response_format={"type": "json_object"} if self.json_mode else None,
-                        **kwargs
-                    )
-                    
-                    if self.stream:
-                        assistant_response = ""
-                        for chunk in response:
-                            if chunk.choices[0].delta.content:
-                                content = chunk.choices[0].delta.content
-                                if should_print:
-                                    print(colored(content, color or self.print_color), end="", flush=True)
-                                assistant_response += content
-                        print()
-                    else:
-                        assistant_response = response.choices[0].message.content
-
-                elif self.provider == "anthropic":
-                    response = self.client.messages.create(
-                        model=self.model,
-                        system=self.system_message,
-                        messages=self.history,
-                        stream=self.stream,
-                        max_tokens=kwargs.get('max_tokens', 8192),
-                        extra_headers={"anthropic-beta": "max-tokens-3-5-sonnet-2024-07-15"},
-                        **kwargs
-                    )
-                    assistant_response = response.content[0].text
-
-                if self.json_mode and self.provider == "openai":
-                    try:
-                        assistant_response = json.loads(assistant_response)
-                    except json.JSONDecodeError:
-                        logger.error(f"Failed to parse JSON response: {assistant_response}")
-                        raise ValueError("Invalid JSON response received")
-
-                self.add_message("assistant", json.dumps(assistant_response) if isinstance(assistant_response, dict) else assistant_response)
-                self.trim_history()
-                return assistant_response
-
+                return self._handle_provider_response(color, should_print, **kwargs)
             except Exception as e:
-                logger.error(f"Error on attempt {retries + 1}/{self.max_retry}: {str(e)}")
-                retries += 1
-                if retries < self.max_retry:
+                logger.error(f"Error on attempt {_ + 1}/{self.max_retry}: {str(e)}")
+                if _ < self.max_retry - 1:
                     time.sleep(1)
-        
         raise Exception(f"Max retries ({self.max_retry}) reached")
 
-    async def get_response_async(self, prompt, color: Optional[str] = None, should_print: bool = True, **kwargs: Any) -> Any:
-        """
-        Asynchronous version of get_response.
+    def _handle_provider_response(
+        self, color: Optional[str], should_print: bool, **kwargs: Any
+    ) -> Any:
+        if self.provider in ["openai", "openrouter"]:
+            return self._handle_openai_response(color, should_print, **kwargs)
+        elif self.provider == "anthropic":
+            return self._handle_anthropic_response(**kwargs)
+        else:
+            raise ValueError(f"Unsupported provider: {self.provider}")
 
-        :param prompt: The user's input message
-        :param color: Color for printing the response (if None, uses default)
-        :param should_print: Whether to print the response
-        :param kwargs: Additional keyword arguments for the API call
-        :return: The assistant's response
-        """
-        await self.add_message_async("user", prompt)
-        retries = 0
-        while retries < self.max_retry:
-            try:
-                if self.provider == "openai" or self.provider == "openrouter":
-                    async with aiohttp.ClientSession() as session:
-                        async with session.post(
-                            "https://api.openai.com/v1/chat/completions",
-                            headers={
-                                "Authorization": f"Bearer {self.api_key}",
-                                "Content-Type": "application/json"
-                            },
-                            json={
-                                "model": self.model,
-                                "messages": [{"role": "system", "content": self.system_message}] + self.history,
-                                "stream": self.stream,
-                                "max_tokens": kwargs.get('max_tokens', 4000),
-                                "response_format": {"type": "json_object"} if self.json_mode else None,
-                                **kwargs
-                            }
-                        ) as response:
-                            if self.stream:
-                                assistant_response = ""
-                                async for line in response.content:
-                                    if line:
-                                        try:
-                                            chunk = json.loads(line.decode('utf-8').split('data: ')[1])
-                                            if chunk['choices'][0]['delta'].get('content'):
-                                                content = chunk['choices'][0]['delta']['content']
-                                                if should_print:
-                                                    print(colored(content, color or self.print_color), end="", flush=True)
-                                                assistant_response += content
-                                        except json.JSONDecodeError:
-                                            pass
-                                print()
-                            else:
-                                response_json = await response.json()
-                                assistant_response = response_json['choices'][0]['message']['content']
+    def _handle_openai_response(
+        self, color: Optional[str], should_print: bool, **kwargs: Any
+    ) -> Any:
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "system", "content": self.system_message}]
+            + self.history,
+            stream=self.stream,
+            max_tokens=kwargs.get("max_tokens", 4000),
+            response_format=({"type": "json_object"} if self.json_mode else None),
+            **kwargs,
+        )
 
-                elif self.provider == "anthropic":
-                    response = await self.client.messages.create(
-                        model=self.model,
-                        system=self.system_message,
-                        messages=self.history,
-                        stream=self.stream,
-                        max_tokens=kwargs.get('max_tokens', 8192),
-                        extra_headers={"anthropic-beta": "max-tokens-3-5-sonnet-2024-07-15"},
-                        **kwargs
+        assistant_response = (
+            self._process_openai_stream(response, color, should_print)
+            if self.stream
+            else response.choices[0].message.content
+        )
+
+        return self._finalize_response(assistant_response)
+
+    def _handle_anthropic_response(self, **kwargs: Any) -> Any:
+        response = self.client.messages.create(
+            model=self.model,
+            system=self.system_message,
+            messages=self.history,
+            stream=self.stream,
+            max_tokens=kwargs.get("max_tokens", 8192),
+            extra_headers={"anthropic-beta": "max-tokens-3-5-sonnet-2024-07-15"},
+            **kwargs,
+        )
+        assistant_response = response.content[0].text
+        return self._finalize_response(assistant_response)
+
+    def _process_openai_stream(
+        self, response, color: Optional[str], should_print: bool
+    ) -> str:
+        assistant_response = ""
+        for chunk in response:
+            if chunk.choices[0].delta.content:
+                content = chunk.choices[0].delta.content
+                if should_print:
+                    print(
+                        colored(content, color or self.print_color),
+                        end="",
+                        flush=True,
                     )
-                    assistant_response = response.content[0].text
+                assistant_response += content
+        print()
+        return assistant_response
 
-                if self.json_mode and self.provider == "openai":
-                    try:
-                        assistant_response = json.loads(assistant_response)
-                    except json.JSONDecodeError:
-                        logger.error(f"Failed to parse JSON response: {assistant_response}")
-                        raise ValueError("Invalid JSON response received")
+    def _finalize_response(self, assistant_response: Any) -> Any:
+        if self.json_mode and self.provider == "openai":
+            try:
+                assistant_response = json.loads(assistant_response)
+            except json.JSONDecodeError:
+                logger.error(f"Failed to parse JSON response: {assistant_response}")
+                raise ValueError("Invalid JSON response received")
 
-                await self.add_message_async("assistant", json.dumps(assistant_response) if isinstance(assistant_response, dict) else assistant_response)
-                await self.trim_history_async()
-                return assistant_response
+        self.add_message(
+            "assistant",
+            (
+                json.dumps(assistant_response)
+                if isinstance(assistant_response, dict)
+                else assistant_response
+            ),
+        )
+        self.trim_history()
+        return assistant_response
 
+    async def get_response_async(
+        self,
+        prompt,
+        color: Optional[str] = None,
+        should_print: bool = True,
+        **kwargs: Any,
+    ) -> Any:
+        self.add_message("user", prompt)
+        return await self._process_response_async(color, should_print, **kwargs)
+
+    async def _process_response_async(
+        self, color: Optional[str] = None, should_print: bool = True, **kwargs: Any
+    ) -> Any:
+        for _ in range(self.max_retry):
+            try:
+                return await self._handle_provider_response_async(
+                    color, should_print, **kwargs
+                )
             except Exception as e:
-                logger.error(f"Error on attempt {retries + 1}/{self.max_retry}: {str(e)}")
-                retries += 1
-                if retries < self.max_retry:
+                logger.error(f"Error on attempt {_ + 1}/{self.max_retry}: {str(e)}")
+                if _ < self.max_retry - 1:
                     await asyncio.sleep(1)
-        
         raise Exception(f"Max retries ({self.max_retry}) reached")
+
+    async def _handle_provider_response_async(
+        self, color: Optional[str], should_print: bool, **kwargs: Any
+    ) -> Any:
+        if self.provider in ["openai", "openrouter"]:
+            return await self._handle_openai_response_async(
+                color, should_print, **kwargs
+            )
+        elif self.provider == "anthropic":
+            return await self._handle_anthropic_response_async(**kwargs)
+        else:
+            raise ValueError(f"Unsupported provider: {self.provider}")
+
+    async def _handle_openai_response_async(
+        self, color: Optional[str], should_print: bool, **kwargs: Any
+    ) -> Any:
+        def sync_request():
+            with httpx.Client() as client:
+                openai_client = OpenAI(api_key=self.api_key, http_client=client)
+                response = openai_client.chat.completions.create(
+                    model=self.model,
+                    messages=[{"role": "system", "content": self.system_message}]
+                    + self.history,
+                    stream=self.stream,
+                    max_tokens=kwargs.get("max_tokens", 4000),
+                    response_format=(
+                        {"type": "json_object"} if self.json_mode else None
+                    ),
+                    **kwargs,
+                )
+                return response
+
+        try:
+            response = await asyncio.to_thread(sync_request)
+
+            if self.stream:
+                assistant_response = await self._process_openai_stream_async(
+                    response, color, should_print
+                )
+            else:
+                assistant_response = response.choices[0].message.content
+
+            return self._finalize_response(assistant_response)
+        except Exception as e:
+            logger.error(f"OpenAI API error: {str(e)}")
+            raise
+
+    async def _handle_anthropic_response_async(self, **kwargs: Any) -> Any:
+        response = await self.client.messages.create(
+            model=self.model,
+            system=self.system_message,
+            messages=self.history,
+            stream=self.stream,
+            max_tokens=kwargs.get("max_tokens", 8192),
+            extra_headers={"anthropic-beta": "max-tokens-3-5-sonnet-2024-07-15"},
+            **kwargs,
+        )
+        assistant_response = response.content[0].text
+        return self._finalize_response(assistant_response)
+
+    async def _process_openai_stream_async(
+        self, response, color: Optional[str], should_print: bool
+    ) -> str:
+        full_response = ""
+        async for chunk in response:
+            if chunk.choices[0].delta.content is not None:
+                content = chunk.choices[0].delta.content
+                full_response += content
+                if should_print:
+                    print(
+                        colored(content, color or self.print_color), end="", flush=True
+                    )
+        if should_print:
+            print()
+        return full_response
 
     def trim_history(self) -> None:
         """Trim the conversation history to stay within the max_history_words limit."""
-        words_count = sum(len(str(message["content"]).split()) for message in self.history if message["role"] != "system")
+        words_count = sum(
+            len(str(message["content"]).split())
+            for message in self.history
+            if message["role"] != "system"
+        )
         while words_count > self.max_history_words and len(self.history) > 1:
             words_count -= len(self.history[0]["content"].split())
             self.history.pop(0)
