@@ -1,6 +1,7 @@
 import streamlit as st
 from asana import load_asanas
 
+
 def main():
     st.title("Asana Explorer")
 
@@ -18,8 +19,13 @@ def main():
     search_button = st.button("Search")
 
     if search_button and search_query:
-        results = [asana for asana in asanas if search_query.lower() in asana['name'].lower() or search_query.lower() in asana['sanskrit'].lower()]
-        
+        results = [
+            asana
+            for asana in asanas
+            if search_query.lower() in asana["name"].lower()
+            or search_query.lower() in asana["sanskrit"].lower()
+        ]
+
         if results:
             for asana in results:
                 st.write("---")
@@ -28,6 +34,7 @@ def main():
                 st.write(f"**ID:** {asana['id']}")
         else:
             st.write("No results found.")
+
 
 if __name__ == "__main__":
     main()

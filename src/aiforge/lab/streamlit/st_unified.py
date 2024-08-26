@@ -1,65 +1,62 @@
 import streamlit as st
+import os
+from datetime import datetime
 from aiforge.lab.unified import UnifiedApis
 
-def main():
-    st.title("AI Chat Interface")
+# Set page configuration
+st.set_page_config(page_title="UnifiedApis LLM Interface", layout="wide")
 
-    # Sidebar for model selection and API key input
-    with st.sidebar:
-        provider = st.selectbox(
-            "Select AI Provider",
-            ["openai", "anthropic", "openrouter"]
-        )
-        
-        api_key = st.text_input("Enter API Key", type="password")
-        
-        model = st.selectbox(
-            "Select Model",
-            get_models_for_provider(provider)
-        )
+# Sidebar
+st.sidebar.title("LLM Selection")
+llm_type = st.sidebar.selectbox(
+    "Choose an LLM provider:", ["OpenAI", "Anthropic", "OpenRouter"]
+)
 
-    # Main chat interface
-    if 'chat_history' not in st.session_state:
-        st.session_state.chat_history = []
 
-    for message in st.session_state.chat_history:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
+# Initialize UnifiedApis
+@st.cache_resource
+def get_unified_api(provider):
+    api_key = os.environ.get(f"{provider.upper()}_API_KEY")
+    if not api_key:
+        raise ValueError(f"API key for {provider} not found in environment variables")
+    return UnifiedApis(provider=provider.lower(), api_key=api_key)
 
-    if prompt := st.chat_input("Ask a question"):
-        if not api_key:
-            st.error("Please enter an API key in the sidebar.")
-            return
 
-        st.session_state.chat_history.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.write(prompt)
+unified_api = get_unified_api(llm_type)
 
-        with st.chat_message("assistant"):
-            message_placeholder = st.empty()
-            try:
-                unified_api = UnifiedApis(
-                    provider=provider,
-                    api_key=api_key,
-                    model=model,
-                    stream=True,
-                    should_print_init=False
-                )
-                response = unified_api.chat(prompt, should_print=False)
-                message_placeholder.write(response)
-                st.session_state.chat_history.append({"role": "assistant", "content": response})
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
+# Main content
+st.title("UnifiedApis LLM Interface")
 
-def get_models_for_provider(provider):
-    if provider == "openai":
-        return ["gpt-3.5-turbo", "gpt-4"]
-    elif provider == "anthropic":
-        return ["claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-2.1"]
-    elif provider == "openrouter":
-        return ["google/gemini-pro-1.5", "anthropic/claude-3-opus-20240229", "openai/gpt-4-turbo-preview"]
+st.markdown(
+    """
+## Project Description
+
+This Streamlit app demonstrates the capabilities of the UnifiedApis class, which provides a unified interface for interacting with various Language Model providers such as OpenAI, Anthropic, and OpenRouter.
+
+Key features of UnifiedApis:
+- Supports multiple LLM providers
+- Handles both synchronous and asynchronous operations
+- Manages conversation history
+- Supports streaming responses
+- Implements retry logic for API calls
+
+Use the dropdown in the sidebar to select different LLM providers and explore their capabilities.
+"""
+)
+
+# Input box and button for asking questions
+user_input = st.text_input("Ask a question:")
+if st.button("Submit"):
+    if user_input:
+        with st.spinner("Generating response..."):
+            response = unified_api.chat(user_input, should_print=False)
+        st.write("Response:")
+        st.write(response)
     else:
-        return []
+        st.warning("Please enter a question.")
 
-if __name__ == "__main__":
-    main()
+# Footer
+footer = st.container()
+with footer:
+    st.markdown("---")
+    st.markdown(f"© {datetime.now().year} UnifiedApis Project. All rights reserved.")
