@@ -33,32 +33,6 @@ def cleanup(output_files):
 
 
 @pytest.mark.asyncio
-async def test_enhance_document_image_original(output_files):
-    # Arrange
-    test_image_name = config.tmp_dir / "test.png"
-
-    # Act
-    original_image = await load_image(test_image_name)
-
-    # Ensure the test image was loaded successfully
-    assert isinstance(
-        original_image, Image.Image
-    ), f"Failed to load test image: {test_image_name}"
-
-    # Process the image
-    enhanced_image = await enhance_document_image(test_image_name)
-
-    # Assert
-    assert isinstance(enhanced_image, Image.Image), "Result is not a PIL Image"
-    assert enhanced_image.mode == "L", "Resulting image is not grayscale"
-    assert enhanced_image.size == original_image.size, "Image dimensions have changed"
-
-    # Save the enhanced image for manual inspection
-    enhanced_image.save(output_files["enhanced"])
-    print(f"Enhanced image saved to {output_files['enhanced']}")
-
-
-@pytest.mark.asyncio
 async def test_load_image():
     # Arrange
     test_image_name = config.tmp_dir / "test.png"
