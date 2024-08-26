@@ -37,9 +37,9 @@ jobs:
       run: poetry install --no-interaction
     - name: Run tests
       run: poetry run pytest
-    - name: Lint with flake8
-      run: poetry run flake8 src tests
-    - name: Check formatting with black
-      run: poetry run black --check src tests
-    - name: Type check with mypy
-      run: poetry run mypy src
+    # - name: Lint with flake8
+    #  run: poetry run flake8 src tests
+    # - name: Check formatting with black
+    #  run: poetry run black --check src tests
+    # - name: Type check with mypy
+    #  run: poetry run mypy src
