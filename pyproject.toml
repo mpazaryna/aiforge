@@ -54,6 +54,9 @@ pre-commit = "^3.8.0"
 # Type checking
 types-pyyaml = "^6.0.12.20240808"
 
+# Task running
+invoke = "^2.2.0"  
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
