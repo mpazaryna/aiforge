@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.4.0] - 2024-09-12 19:40:57 -0400
+
+### Features
+
+- bootstrap a new module using json_utils ([`16397cd`](https://github.com/mpazaryna/aiforge/commit/16397cdee04198ad7ca6bbc218d7a011bd5f6566))
+- enhance userdat to read json with new json_utils.py ([`c5f737d`](https://github.com/mpazaryna/aiforge/commit/c5f737d0b79732729dedb683a886bfef27de018d))
+- util to read json file ([`cc56cc5`](https://github.com/mpazaryna/aiforge/commit/cc56cc5279dcfd388d92b65cddcb72abae8abc27))
+
+### Bug Fixes
+
+- resolve mpy issues ([`69849c7`](https://github.com/mpazaryna/aiforge/commit/69849c7aeb88eff60489cd0fe68cc9e405e0103f))
+
+### Documentation
+
+- adding instructions for risk_kit ([`0f25491`](https://github.com/mpazaryna/aiforge/commit/0f254910d1418ca1dbf394d9b6df36513e0b74a4))
+- update readme ([`f0edc63`](https://github.com/mpazaryna/aiforge/commit/f0edc6386d4fe3d5cba393ba6b246d8d1b14e211))
+- fix markdown issue and new insight doc on file access ([`3486454`](https://github.com/mpazaryna/aiforge/commit/34864543abb0223d60626d64c8a310855de145fd))
+- updated changelog ([`d37b18f`](https://github.com/mpazaryna/aiforge/commit/d37b18f0e731574246ce1f12e53e230d5be8f609))
+
+### Chores
+
+- add invoke and tasks.py ([`306de05`](https://github.com/mpazaryna/aiforge/commit/306de05f9f99f342cee6ddee1e34d332cd248b73))
+- cleaned up toml ([`331e06e`](https://github.com/mpazaryna/aiforge/commit/331e06edddb118e57a62962eb6de6cde2489eaaf))
+- missing dependency ([`719a40d`](https://github.com/mpazaryna/aiforge/commit/719a40dba2996cc6597ef7e301685e24dc4567bd))
+- move risk_kit and cli ([`16b3bac`](https://github.com/mpazaryna/aiforge/commit/16b3bac61286f750e3fae0588e3d7bd700c7019b))
+- server initial import ([`91dd96f`](https://github.com/mpazaryna/aiforge/commit/91dd96fbffb0d74c44f7cb316cd2ab7ad6f28182))
+- commit tmp files ([`6d71eea`](https://github.com/mpazaryna/aiforge/commit/6d71eea12511b3597d28fb1907ac5bf9f9568669))
+- fix lint errors ([`240aa7b`](https://github.com/mpazaryna/aiforge/commit/240aa7b617b58bfb3e4b0b709e8fa970c343b629))
+- updates and additional fixes ([`3d21fba`](https://github.com/mpazaryna/aiforge/commit/3d21fbadc14b120883711fef030c7fc848fa0ce9))
+- resolving broken pre-commit ([`fcae17f`](https://github.com/mpazaryna/aiforge/commit/fcae17f1dbeea3bc4dd61a5222d114a0afa07bf2))
+- rename folder refactor ([`c517e70`](https://github.com/mpazaryna/aiforge/commit/c517e70069b5f6063ebbb48ae7995a3a68fecdb7))
+- rename refactor for wikipedia scraper ([`f6efc04`](https://github.com/mpazaryna/aiforge/commit/f6efc04004427082df4a5e9b0e91ce0bf4ca467a))
+- copy notebook from other project #6 ([`62c359d`](https://github.com/mpazaryna/aiforge/commit/62c359d7f6a1e049ebf3affd24a3a008e58e2c68))
+- resolve issues on cicd ([`fa1c3a2`](https://github.com/mpazaryna/aiforge/commit/fa1c3a207dbc0edf885dac35fe7b3e17aabc08ba))
+- continued refinements to json_utils and its tests ([`7ad7d10`](https://github.com/mpazaryna/aiforge/commit/7ad7d10bfe505883f791d8a934305dcf9f884f4c))
+- remove cruft ([`dfa2f07`](https://github.com/mpazaryna/aiforge/commit/dfa2f076949812c1ebf3aeae33d5019f9137fed1))
+
 ## [v0.3.0] - 2024-08-18 09:59:09 -0400
 
 ### Features
