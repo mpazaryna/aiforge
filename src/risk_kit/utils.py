@@ -17,10 +17,11 @@ from .config import (  # Import DATA_DIRECTORY
     LOGGING_FILENAME,
     LOGGING_LEVEL,
     OUTPUT_JSON_FILENAME,
+    config,
 )
 
 # Configure logging
-logging.basicConfig(filename=LOGGING_FILENAME, level=LOGGING_LEVEL)
+logging.basicConfig(filename=config.log_file, level=logging.DEBUG)
 
 
 # Function to read data from a CSV file
@@ -30,23 +31,22 @@ def read_data_from_csv(file_path):
 
 
 # Function to write JSON output to a file
-def write_json(output, filename):
+def write_json(output):
     json_output = json.dumps(output, indent=4)  # Convert output to JSON format
-    print(json_output)  # Print JSON output
+    logger.info(f"JSON output: {json_output}")
 
-    # Debugging: Print the output path
-    print(f"Writing JSON output to: {filename}")
+    output_path = Path(config.output_json_path)
+    logger.info(f"Writing JSON output to: {output_path}")
 
-    # Write the output to a JSON file
     try:
-        with open(filename, "w") as json_file:
-            json_file.write(json_output)  # Ensure this line is executed
-            json_file.write("\n")  # Ensure the file ends with a newline
-        logging.info(
-            f"JSON output written to {filename}: {json_output}"
-        )  # Log the output
+        with output_path.open("w") as json_file:
+            json_file.write(json_output)
+            json_file.write("\n")
+        logger.info(f"JSON output written to {output_path}")
     except Exception as e:
-        print(f"Error writing JSON file: {e}")  # Log the error
+        logger.error(f"Error writing JSON file: {e}")
+
+    return output  # Return the output for consistency
 
 
 # Function to train and evaluate the model
@@ -76,9 +76,13 @@ def train_and_evaluate_model():
 
     # Prepare output in JSON format
     output = {
-        "accuracy": accuracy,
-        "classification_report": classification_report_dict,  # Modify this line
+        "accuracy": float(accuracy),  # Convert to float to ensure JSON serialization
+        "classification_report": classification_report_dict,
     }
 
-    # Call the new write_json function
-    write_json(output, OUTPUT_JSON_FILENAME)  # Use the new function
+    # Add debug information
+    logging.info(f"Type of config: {type(config)}")
+    logging.info(f"Dir of config: {dir(config)}")
+
+    write_json(output)
+    return output

@@ -72,6 +72,11 @@ class RiskKitConfig:
         logger.addHandler(file_handler)
         logger.addHandler(console_handler)
 
+    @property
+    def output_json_path(self):
+        """Returns the full path for the output JSON file."""
+        return str(self.logs_dir / OUTPUT_JSON_FILENAME)
+
 
 # Constants
 LOGGING_FILENAME = "risk_kit.log"
@@ -80,6 +85,9 @@ OUTPUT_JSON_FILENAME = "risk_assessment_output.json"
 
 # Global instance
 config = RiskKitConfig()
+
+# Update the OUTPUT_JSON_FILENAME to use the logs_dir
+OUTPUT_JSON_PATH = config.output_json_path
 
 # You might also want to add other constants that might be used across your project
 DATA_DIRECTORY = config.project_root / "data"
