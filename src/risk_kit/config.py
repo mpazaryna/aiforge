@@ -9,16 +9,23 @@ class RiskKitConfig:
     A configuration class for managing directories in the RiskKit module.
     """
 
+    PROJECT_NAME = "RISKKIT"
+
     @cached_property
     def project_root(self):
         """Lazy-loaded project root directory."""
-        env_root = os.environ.get("RISKKIT_PROJECT_ROOT")
+        env_root = os.environ.get(f"{self.PROJECT_NAME}_PROJECT_ROOT")
         return Path(env_root) if env_root else Path(__file__).parent.parent.parent
 
     @cached_property
     def logs_dir(self):
         """Lazy-loaded logs directory."""
-        return self._get_directory("RISKKIT_LOGS_DIR", "logs")
+        return self._get_directory(f"{self.PROJECT_NAME}_LOGS_DIR", "logs")
+
+    @cached_property
+    def data_dir(self):
+        """Lazy-loaded data directory."""
+        return self._get_directory(f"{self.PROJECT_NAME}_DATA_DIR", "data")
 
     def _get_directory(self, env_var, default_name):
         """
@@ -36,7 +43,8 @@ class RiskKitConfig:
         """
         Ensures all directories exist and sets up logging.
         """
-        self.logs_dir.mkdir(parents=True, exist_ok=True)
+        for dir_path in [self.logs_dir, self.data_dir]:
+            dir_path.mkdir(parents=True, exist_ok=True)
         self.setup_logging()
 
     @cached_property
@@ -65,14 +73,13 @@ class RiskKitConfig:
         logger.addHandler(console_handler)
 
 
-# Create a global instance of the configuration
-config = RiskKitConfig()
-
-# Add these lines if they're not already present
+# Constants
 LOGGING_FILENAME = "risk_kit.log"
-LOGGING_LEVEL = logging.DEBUG  # Changed to DEBUG
+LOGGING_LEVEL = logging.DEBUG
+OUTPUT_JSON_FILENAME = "risk_assessment_output.json"
 
-OUTPUT_JSON_FILENAME = "risk_assessment_output.json"  # Add this line
+# Global instance
+config = RiskKitConfig()
 
 # You might also want to add other constants that might be used across your project
 DATA_DIRECTORY = config.project_root / "data"
