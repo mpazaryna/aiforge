@@ -5,9 +5,8 @@
 import argparse
 import logging
 
-from logging_config import setup_logging  # Import the logging setup
-
 from risk_kit.calculator_factory import CalculatorFactory  # Import the factory
+from risk_kit.logging_config import setup_logging  # Import the logging setup
 from risk_kit.utils import train_and_evaluate_model
 
 # Setup logging

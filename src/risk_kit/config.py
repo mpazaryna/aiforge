@@ -1,15 +1,42 @@
 import os
+from functools import cached_property
 from pathlib import Path
 
-# Determine the project root directory
-PROJECT_ROOT = (
-    Path(__file__).resolve().parent.parent.parent
-)  # Adjust to point to the project root
 
-# Configuration settings
-DATA_DIRECTORY = PROJECT_ROOT / "data"  # Set to the root data directory
-LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
-LOGGING_FILENAME = os.getenv("LOGGING_FILENAME", "model_evaluation.log")
-OUTPUT_JSON_FILENAME = (
-    DATA_DIRECTORY / "model_evaluation_output.json"
-)  # Use the root data directory
+class RiskKitConfig:
+    """
+    A configuration class for managing directories in the RiskKit module.
+    """
+
+    @cached_property
+    def project_root(self):
+        """Lazy-loaded project root directory."""
+        env_root = os.environ.get("RISKKIT_PROJECT_ROOT")
+        return Path(env_root) if env_root else Path(__file__).parent.parent.parent
+
+    @cached_property
+    def logs_dir(self):
+        """Lazy-loaded logs directory."""
+        return self._get_directory("RISKKIT_LOGS_DIR", "logs")
+
+    def _get_directory(self, env_var, default_name):
+        """
+        Sets up a directory based on environment variables or defaults.
+        """
+        env_dir = os.environ.get(env_var)
+        if env_dir:
+            dir_path = Path(env_dir)
+        else:
+            dir_path = self.project_root / default_name
+
+        return dir_path
+
+    def ensure_directories_exist(self):
+        """
+        Ensures all directories exist. Call this method explicitly when you want to create the directories.
+        """
+        self.logs_dir.mkdir(parents=True, exist_ok=True)
+
+
+# Create a global instance of the configuration
+config = RiskKitConfig()
