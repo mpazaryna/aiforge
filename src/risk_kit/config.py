@@ -20,7 +20,9 @@ class RiskKitConfig:
     @cached_property
     def logs_dir(self):
         """Lazy-loaded logs directory."""
-        return self._get_directory(f"{self.PROJECT_NAME}_LOGS_DIR", "logs")
+        return (
+            Path(__file__).parent.parent.parent / "logs"
+        )  # Updated to point to the root logs directory
 
     @cached_property
     def data_dir(self):
@@ -57,7 +59,9 @@ class RiskKitConfig:
         logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)  # Set root logger to lowest level
 
-        file_handler = logging.FileHandler(self.log_file)
+        file_handler = logging.FileHandler(
+            self.logs_dir / LOGGING_FILENAME
+        )  # Updated log file path
         file_handler.setLevel(file_level)
 
         console_handler = logging.StreamHandler()
