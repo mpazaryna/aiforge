@@ -3,12 +3,9 @@
 import psutil
 from fastapi import APIRouter
 
-from aiforge.server.config import (
-    CRITICAL_CPU_THRESHOLD,
-    CRITICAL_DISK_THRESHOLD,
-    CRITICAL_MEMORY_THRESHOLD,
-    logger,
-)
+from aiforge.server.config import (CRITICAL_CPU_THRESHOLD,
+                                   CRITICAL_DISK_THRESHOLD,
+                                   CRITICAL_MEMORY_THRESHOLD, logger)
 
 router = APIRouter()
 

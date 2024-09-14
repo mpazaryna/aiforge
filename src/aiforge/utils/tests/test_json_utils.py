@@ -5,12 +5,8 @@ import pytest
 
 from aiforge.config import config
 from aiforge.utils.file_utils import get_file, write_to_file
-from aiforge.utils.json_utils import (
-    JSONProcessingError,
-    process_json_data,
-    read_json_file,
-    write_json_file,
-)
+from aiforge.utils.json_utils import (JSONProcessingError, process_json_data,
+                                      read_json_file, write_json_file)
 
 # Ensure the logs directory exists
 config.ensure_directories_exist()

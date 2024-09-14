@@ -3,10 +3,8 @@ import os
 import pytest
 
 from aiforge.config import config
-from aiforge.services.scrape_wikipedia import (
-    fetch_wikipedia_pages,
-    save_wikipedia_pages,
-)
+from aiforge.services.scrape_wikipedia import (fetch_wikipedia_pages,
+                                               save_wikipedia_pages)
 
 
 @pytest.fixture

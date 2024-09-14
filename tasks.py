@@ -19,6 +19,11 @@ def format(c):
 
 
 @task
+def pre_commit(c):
+    c.run("pre-commit run --all-files")  # Added pre-commit task
+
+
+@task
 def all(c):
     format(c)
     lint(c)
