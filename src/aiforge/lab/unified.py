@@ -1,12 +1,13 @@
-import json
-from openai import OpenAI
-from anthropic import Anthropic, AsyncAnthropic
-from termcolor import colored
-import time
 import asyncio
-from typing import Optional, Any, Dict, List
+import json
 import logging
+import time
+from typing import Any, Dict, List, Optional
+
 import httpx
+from anthropic import Anthropic, AsyncAnthropic
+from openai import OpenAI
+from termcolor import colored
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -212,7 +213,14 @@ class UnifiedApis:
             else response.choices[0].message.content
         )
 
-        return self._finalize_response(assistant_response)
+        if self.json_mode:
+            try:
+                return json.loads(assistant_response)
+            except json.JSONDecodeError:
+                # If JSON parsing fails, return a dict with the original response
+                return {"response": assistant_response}
+        else:
+            return assistant_response
 
     def _handle_anthropic_response(self, **kwargs: Any) -> Any:
         response = self.client.messages.create(

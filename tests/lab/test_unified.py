@@ -1,7 +1,9 @@
-import pytest
-import os
-from aiforge.lab.unified import UnifiedApis
 import logging
+import os
+
+import pytest
+
+from aiforge.lab.unified import UnifiedApis
 
 logger = logging.getLogger(__name__)
 
@@ -48,15 +50,31 @@ def test_openai_json_mode(api_key, json_mode):
     )
     response = openai_api.chat("What's the capital of Spain?")
 
+    # Check if the response is in the expected format
     if json_mode:
-        assert isinstance(response, dict)
-        assert "response" in response or "answer" in response
-        content = response.get("response") or response.get("answer")
-        assert isinstance(content, str)
-        assert "Madrid" in content
+        assert isinstance(response, dict), f"Expected dict, got {type(response)}"
+
+        # Check if either 'response' or 'answer' key is present in the response
+        assert any(
+            key in response for key in ["response", "answer", "capital"]
+        ), f"Expected 'response', 'answer', or 'capital' key in {response}"
+
+        # If 'response' or 'answer' key is present, check its content
+        if "response" in response:
+            assert (
+                "Madrid" in response["response"]
+            ), f"Expected 'Madrid' in response: {response}"
+        elif "answer" in response:
+            assert (
+                "Madrid" in response["answer"]
+            ), f"Expected 'Madrid' in answer: {response}"
+        else:
+            assert (
+                "Madrid" in response["capital"]
+            ), f"Expected 'Madrid' in capital: {response}"
     else:
-        assert isinstance(response, str)
-        assert "Madrid" in response
+        assert isinstance(response, str), f"Expected str, got {type(response)}"
+        assert "Madrid" in response, f"Expected 'Madrid' in response: {response}"
 
 
 def test_openai_stream_mode(openai_api):

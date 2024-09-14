@@ -8,31 +8,33 @@ class AiForgeConfig:
     A configuration class for managing directories in the AiForge project.
     """
 
+    PROJECT_NAME = "AIFORGE"
+
     @cached_property
     def project_root(self):
         """Lazy-loaded project root directory."""
-        env_root = os.environ.get("AIFORGE_PROJECT_ROOT")
+        env_root = os.environ.get(f"{self.PROJECT_NAME}_PROJECT_ROOT")
         return Path(env_root) if env_root else Path.cwd()
 
     @cached_property
     def data_dir(self):
         """Lazy-loaded data directory."""
-        return self._get_directory("AIFORGE_DATA_DIR", "data")
+        return self._get_directory(f"{self.PROJECT_NAME}_DATA_DIR", "data")
 
     @cached_property
     def tmp_dir(self):
         """Lazy-loaded temporary directory."""
-        return self._get_directory("AIFORGE_TMP_DIR", "tmp")
+        return self._get_directory(f"{self.PROJECT_NAME}_TMP_DIR", "tmp")
 
     @cached_property
     def test_data_dir(self):
         """Lazy-loaded test data directory."""
-        return self._get_directory("AIFORGE_TEST_DATA_DIR", "data/test")
+        return self._get_directory(f"{self.PROJECT_NAME}_TEST_DATA_DIR", "data/test")
 
     @cached_property
     def logs_dir(self):
         """Lazy-loaded logs directory."""
-        return self._get_directory("AIFORGE_LOGS_DIR", "logs")
+        return self._get_directory(f"{self.PROJECT_NAME}_LOGS_DIR", "logs")
 
     def _get_directory(self, env_var, default_name):
         """
