@@ -1,3 +1,25 @@
+"""
+This configuration file for Flake8 specifies the following:
+
+- max-line-length: Sets the maximum allowed line length to 120 characters.
+- extend-ignore: Lists specific error codes to ignore:
+    - E203: Whitespace before ':'
+    - E266: Too many leading '#' for block comment
+    - E501: Line too long
+    - E302: Expected 2 blank lines, found 1
+    - E305: Expected 2 blank lines after class or function definition, found 1
+    - W503: Line break before binary operator
+    - W293: Blank line contains whitespace
+    - W291: Trailing whitespace
+    - W292: No newline at end of file
+- max-complexity: Sets the maximum allowed complexity for functions to 10.
+- select: Specifies which error codes to check.
+- docstring-convention: Sets the docstring style to Google.
+- per-file-ignores: Specifies ignores for specific files:
+    - __init__.py: Ignore F401 (module imported but unused)
+    - tests/*: Ignore D100, D101, D102, D103 (docstring-related checks)
+    - docs/source/conf.py: Ignore E402 (module level import not at top of file)
+"""
 [flake8]
 max-line-length = 120
 extend-ignore = E203, E266, E501, E302, E305, W503, W293, W291, W292
