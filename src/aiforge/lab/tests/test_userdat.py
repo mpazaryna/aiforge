@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from aiforge.lab.userdat import parse_user_data
+from aiforge.lab.parse_user_dat import parse_user_data
 from aiforge.utils.file_utils import get_directory, write_to_file
 
 

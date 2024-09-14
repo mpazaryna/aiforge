@@ -3,7 +3,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from aiforge.lab.unified import UnifiedApis
+from aiforge.echohive.unified import UnifiedApis
 
 # Set page configuration
 st.set_page_config(page_title="UnifiedApis LLM Interface", layout="wide")

@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from aiforge.lab.unified import UnifiedApis
+from aiforge.echohive.unified import UnifiedApis
 
 logger = logging.getLogger(__name__)
 
