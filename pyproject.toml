@@ -6,7 +6,8 @@ authors = ["Matthew Pazaryna <mpazaryna@gmail.com>"]
 readme = "README.md"
 packages = [
     {include = "aiforge", from = "src"},
-    {include = "risk_kit", from = "src"}
+    {include = "risk_kit", from = "src"},
+    {include = "example_kit", from = "src"}
 ]
 
 [tool.poetry.dependencies]
