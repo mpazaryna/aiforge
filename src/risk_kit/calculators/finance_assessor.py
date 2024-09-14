@@ -8,11 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 
-from ..config import (  # Import DATA_DIRECTORY
-    LOGGING_FILENAME,
-    LOGGING_LEVEL,
-    OUTPUT_JSON_FILENAME,
-)
+from risk_kit.config import LOGGING_FILENAME, LOGGING_LEVEL  # Import DATA_DIRECTORY
 
 # Configure logging
 logging.basicConfig(filename=LOGGING_FILENAME, level=LOGGING_LEVEL)

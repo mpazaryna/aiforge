@@ -3,11 +3,7 @@ import logging
 from pathlib import Path
 
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report
-from sklearn.model_selection import train_test_split
 
-from .calculators.finance_assessor import classify_risk, generate_data
 from .config import config
 
 # Configure logging
@@ -34,29 +30,3 @@ def write_json(output, output_path=None):
         logger.error(f"Error writing JSON file: {e}")
 
     return output
-
-
-# Function to train and evaluate the model
-def train_and_evaluate_model(test_size=0.2, random_state=42):
-    X = generate_data()
-    y = classify_risk(X)
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state
-    )
-
-    model = LogisticRegression(random_state=random_state)
-    model.fit(X_train, y_train)
-
-    y_pred = model.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    logger.info(f"Accuracy: {accuracy}")
-
-    classification_report_dict = classification_report(y_test, y_pred, output_dict=True)
-
-    output = {
-        "accuracy": float(accuracy),
-        "classification_report": classification_report_dict,
-    }
-
-    return write_json(output)

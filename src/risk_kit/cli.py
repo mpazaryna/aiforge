@@ -2,7 +2,7 @@ import argparse
 import logging
 from pathlib import Path
 
-from risk_kit.calculator_factory import CalculatorFactory
+from risk_kit.calculator import CalculatorFactory
 from risk_kit.config import config
 from risk_kit.utils import train_and_evaluate_model
 
