@@ -10,7 +10,6 @@ The Command Line Interface (CLI) for Risk Kit is now located in the main module 
 
 python -m risk_kit.cli --calculator <calculator_type>
 
-
 Replace `<calculator_type>` with either `mortgage` or `risk` depending on which calculator you want to use.
 
 Examples:

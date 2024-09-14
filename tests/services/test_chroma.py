@@ -3,11 +3,8 @@ import shutil
 import pytest
 
 from aiforge.config import config
-from aiforge.langchain.document_processing import (
-    create_vectordb,
-    load_documents,
-    split_text,
-)
+from aiforge.langchain.document_processing import (create_vectordb,
+                                                   load_documents, split_text)
 from aiforge.langchain.query_service import create_qa_chain, process_query
 
 

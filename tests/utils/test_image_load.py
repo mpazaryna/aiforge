@@ -7,7 +7,6 @@ from hypothesis import strategies as st
 from PIL import Image
 
 from aiforge.config import config
-
 # from paz.images.processors import load_image
 from aiforge.images.load import load_image
 

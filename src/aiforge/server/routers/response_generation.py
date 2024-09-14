@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from aiforge.langchain.langchain_service import get_langchain_service  # type: ignore
+from aiforge.langchain.langchain_service import \
+    get_langchain_service  # type: ignore
 from aiforge.server.config import logger
 
 router = APIRouter()
