@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 
 from risk_kit.config import config
 

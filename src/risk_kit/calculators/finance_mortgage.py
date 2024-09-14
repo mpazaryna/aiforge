@@ -1,9 +1,6 @@
 # src/risk_kit/financial_calculator_mortgage.py
 
 
-import logging
-
-
 def assess_mortgage_eligibility(annual_income, credit_score, down_payment):
     home_price = 500000
     required_income = home_price * 0.2

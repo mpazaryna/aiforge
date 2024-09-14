@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from .config import config
+from risk_kit.config import config
 
 # Configure logging
 logging.basicConfig(filename=config.log_file, level=logging.DEBUG)
