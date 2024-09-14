@@ -1,5 +1,6 @@
 import streamlit as st
-from asana import load_asanas
+
+from aiforge.lab.asana import load_asanas
 
 
 def main():
