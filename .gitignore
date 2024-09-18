@@ -165,3 +165,4 @@ tmp/chroma-populate/
 
 logs/pytest.log
 *.sqlite3
+tmp/chroma-populate/chroma.sqlite3
